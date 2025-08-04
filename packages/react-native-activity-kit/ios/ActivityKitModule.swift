@@ -1,0 +1,6 @@
+
+
+
+class ActivityKitModule : HybridActivityKitModuleSpec {
+  
+}

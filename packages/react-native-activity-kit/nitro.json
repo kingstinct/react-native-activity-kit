@@ -12,7 +12,11 @@
     ],
     "androidCxxLibName": "NitroActivityKit"
   },
-  "autolinking": {},
+  "autolinking": {
+    "ActivityKitModule": {
+      "swift": "ActivityKitModule"
+    }
+  },
   "ignorePaths": [
     "**/node_modules"
   ]

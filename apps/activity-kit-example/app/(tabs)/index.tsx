@@ -1,10 +1,11 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Button, Platform, StyleSheet } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { ActivityKit } from 'react-native-activity-kit'; // Importing the ActivityKit module
 
 export default function HomeScreen() {
   return (
@@ -16,6 +17,11 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
+      <Button onPress={() => ActivityKit.startActivity({ name: 'Test Activity' })} title='Start Activity'>
+      </Button>
+      <Button onPress={() => ActivityKit.listActivities().then(console.log)} title='List Activities' />
+      <Button onPress={() => ActivityKit.updateActivity('activity-id', { name: 'Updated Activity' })} title='Update Activity' />
+      <Button onPress={() => ActivityKit.endActivity('activity-id')} title='End Activity' />
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />

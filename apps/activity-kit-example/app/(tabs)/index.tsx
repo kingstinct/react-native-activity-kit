@@ -1,13 +1,18 @@
 import { Image } from 'expo-image';
 import { Button, Platform, StyleSheet } from 'react-native';
+import * as Notifications from 'expo-notifications';
+
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ActivityKit } from 'react-native-activity-kit'; // Importing the ActivityKit module
+import { useState } from 'react';
+
 
 export default function HomeScreen() {
+  const [latestActivityId, setLatestActivityId] = useState<string | null>(null);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -17,8 +22,34 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-      <Button onPress={() => ActivityKit.startActivity({ name: 'Test Activity' }, { sdf: 1 })} title='Start Activity'>
+        <Button onPress={() => setLatestActivityId(ActivityKit.startActivity({ name: 'Test Activity' }, { sdf: 1 }, { pushType: { token: true } }).id)} title='Start Activity'>
       </Button>
+      <Button onPress={() => Notifications.requestPermissionsAsync({
+    ios: {
+      allowAlert: true,
+      allowBadge: true,
+      allowSound: true,
+    },
+  })} title='Push permissions'>
+      </Button>
+
+      { latestActivityId ? <Button 
+      onPress={() => {
+        const activity = ActivityKit.getActivityById(latestActivityId);
+        if (activity) {
+          activity.update({ name: 'Updated Activity' }, {
+            alertConfiguration: {
+              title: 'Activity Updated',
+              body: 'The activity has been updated successfully.',
+            },
+            timestamp: new Date(),
+          });
+          console.log('Activity updated:', activity);
+        } else {
+          console.warn('Activity not found');
+        }
+      }} title='Update Activity'>
+      </Button> : null }
       <Button onPress={() => console.log(ActivityKit.getAllActivities().map(activity => ({
         pushToken: activity.pushToken,
         id: activity.id,

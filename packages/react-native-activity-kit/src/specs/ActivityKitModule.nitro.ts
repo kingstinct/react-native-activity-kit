@@ -26,6 +26,22 @@ export enum ActivityStyle {
 }
 
 export interface ActivityKitModule extends HybridObject<{ ios: 'swift' }> {
+  readonly areActivitiesEnabled: boolean
+  readonly frequentPushesEnabled: boolean
+  readonly isAvailable: boolean
+  readonly pushToStartToken?: string
+
+  subscribeToActivityUpdates(callback: (activity: ActivityProxy) => void): void
+  subscribeToFrequentPushesUpdates(
+    callback: (enabled: boolean) => void
+  ): void
+  subscribeToActivityEnablementUpdates(
+    callback: (enabled: boolean) => void
+  ): void
+  subscribeToPushToStartTokenUpdates(
+    callback: (token: string) => void
+  ): void
+
   startActivity(
     attributes: AnyMap,
     state: AnyMap,

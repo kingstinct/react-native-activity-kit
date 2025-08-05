@@ -151,14 +151,14 @@ func convertToCodableValue(_ value: Any) -> CodableValue? {
     }
 }
 
-class ActivityProxyState : Codable, Hashable, Equatable {
+class GenericDictionary : Codable, Hashable {
     var codable: CodableValue?
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(codable?.hashValue)
     }
     
-    static func == (lhs: ActivityProxyState, rhs: ActivityProxyState) -> Bool {
+    static func == (lhs: GenericDictionary, rhs: GenericDictionary) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
     
@@ -168,8 +168,35 @@ class ActivityProxyState : Codable, Hashable, Equatable {
         
     }
     
-    public init(state: NitroModules.AnyMap) throws {
+    public init(state: AnyMap) throws {
         self.codable = convertToCodableValue(anyMapToDictionary(state))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(codable)
+    }
+}
+
+struct GenericDictionaryStruct : Codable, Hashable {
+    var codable: CodableValue?
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(codable?.hashValue)
+    }
+    
+    static func == (lhs: GenericDictionaryStruct, rhs: GenericDictionaryStruct) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.codable = try container.decode(CodableValue.self)
+        
+    }
+    
+    public init(data: AnyMap) throws {
+        self.codable = convertToCodableValue(anyMapToDictionary(data))
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -207,13 +234,100 @@ func serializeAnyMap(_ metadata: [String: Any]?) -> AnyMap {
 }
 
 @available(iOS 16.1, *)
+func serializeAttributes(data: GenericDictionary) throws -> AnyMap {
+    let encoder = JSONEncoder()
+    
+    let encodedData = try encoder.encode(data)
+    if let jsonObject = try JSONSerialization.jsonObject(with: encodedData) as? [String: Any] {
+        return serializeAnyMap(jsonObject)
+    }
+    
+    return AnyMap()
+}
+
+@available(iOS 16.1, *)
+func serializeContentState(contentState: GenericDictionaryStruct) throws -> AnyMap {
+    let encoder = JSONEncoder()
+    
+    let encodedData = try encoder.encode(contentState)
+    if let jsonObject = try JSONSerialization.jsonObject(with: encodedData) as? [String: Any] {
+        return serializeAnyMap(jsonObject)
+    }
+    
+    return AnyMap()
+}
+
+@available(iOS 16.1, *)
+func convertActivityState(_ activityState: ActivityKit.ActivityState) -> ActivityState {
+    switch activityState {
+    case .active:
+        return .active
+    case .dismissed:
+        return .dismissed
+    case .ended:
+        return .ended
+    case .stale:
+        return .stale
+    default:
+        return .none
+    }
+}
+
+func parsePushToken(_ token: Data?) -> String? {
+    if let token = token {
+        return token.map { String(format: "%02x", $0) }.joined()
+    }
+    return nil
+}
+
+@available(iOS 16.1, *)
 class ActivityProxy : HybridActivityProxySpec {
+    func subscribeToActivityStateUpdates(callback: @escaping (ActivityState) -> Void) throws {
+        Task {
+            for await activityState in activity.activityStateUpdates {
+                callback(convertActivityState(activityState))
+            }
+        }
+    }
+    
+    func subscribeToPushTokenUpdates(callback: @escaping (String) -> Void) throws {
+        Task {
+            for await pushToken in activity.pushTokenUpdates {
+                if let tokenString = parsePushToken(pushToken) {
+                    callback(tokenString)
+                }
+            }
+        }
+    }
+    
+    func subscribeToStateUpdates(callback: @escaping (ActivityStateUpdate) -> Void) throws {
+        Task {
+            if #available(iOS 16.2, *) {
+                for await content in activity.contentUpdates {
+                    callback(
+                        ActivityStateUpdate(
+                            state: try serializeContentState(contentState: content.state),
+                            staleDate: content.staleDate,
+                            relevanceScore: content.relevanceScore
+                        ))
+                }
+            } else {
+                for await contentState in activity.contentStateUpdates {
+                    callback(ActivityStateUpdate(
+                        state: try serializeContentState(contentState: contentState),
+                        staleDate: nil,
+                        relevanceScore: nil
+                    ))
+                }
+            }
+        }
+    }
     
     // Swift
-    var attributes: NitroModules.AnyMap {
+    var attributes: AnyMap {
         do {
             let encoder = JSONEncoder()
-            let data = try encoder.encode(activity.attributes.data)
+            let data = try encoder.encode(activity.attributes)
             if let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 return serializeAnyMap(jsonObject)
             }
@@ -223,19 +337,20 @@ class ActivityProxy : HybridActivityProxySpec {
         return AnyMap()
     }
     
-    var state: NitroModules.AnyMap {
+    var state: AnyMap {
         do {
-            
+            let encoder = JSONEncoder()
+            var data: GenericDictionaryStruct
             if #available(iOS 16.2, *) {
-                let encoder = JSONEncoder()
-                let data = try encoder.encode(activity.content.state.data)
-                if let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    return serializeAnyMap(jsonObject)
-                }
+                data = activity.content.state
             } else {
-                // Fallback on earlier versions
+                data = activity.contentState
             }
             
+            let encodedData = try encoder.encode(data)
+            if let jsonObject = try JSONSerialization.jsonObject(with: encodedData) as? [String: Any] {
+                return serializeAnyMap(jsonObject)
+            }
         } catch {
             // Handle error if needed
         }
@@ -273,19 +388,86 @@ class ActivityProxy : HybridActivityProxySpec {
         }
     }
     
-    func update(state: NitroModules.AnyMap, options: UpdateOptions?) throws -> Void {
+    func update(state: AnyMap, options: UpdateOptions?) throws -> Void {
         Task {
-            let newState = try ActivityKitModuleAttributes.ContentState(dynamic: state)
-            await activity.update(using: newState)
+            let contentState = try ActivityKitModuleAttributes.ContentState(data: state)
+            
+            var alertConfiguration: ActivityKit.AlertConfiguration? = nil
+            if let config = options?.alertConfiguration {
+                alertConfiguration = ActivityKit.AlertConfiguration(
+                    title: LocalizedStringResource(stringLiteral: config.title),
+                    body: LocalizedStringResource(stringLiteral: config.body),
+                    sound: config.sound != nil
+                        ? ActivityKit.AlertConfiguration.AlertSound.named(config.sound!)
+                        : .default
+                )
+            }
+            
+            if #available(iOS 16.2, *) {
+                let updatedState = ActivityContent.init(
+                    state: contentState,
+                    staleDate: options?.staleDate,
+                    relevanceScore: options?.relevanceScore ?? 0
+                )
+                
+                if #available(iOS 17.2, *) {
+                    await activity.update(
+                        updatedState,
+                        alertConfiguration: alertConfiguration,
+                        timestamp: options?.timestamp ?? Date.now
+                    )
+                } else {
+                    await activity.update(
+                        updatedState,
+                        alertConfiguration: alertConfiguration
+                    )
+                }
+            } else {
+                await activity.update(
+                    using: contentState,
+                    alertConfiguration: alertConfiguration
+                )
+            }
         }
-        
     }
     
-    func end(state: NitroModules.AnyMap, options: EndOptions?) throws -> Void {
+    func end(state: AnyMap, options: EndOptions?) throws -> Void {
         Task {
-            let newState = try ActivityKitModuleAttributes.ContentState(dynamic: state)
+            let newState = try ActivityKitModuleAttributes.ContentState(data: state)
             
-            await activity.end(using: newState)
+            var dismissalPolicy: ActivityUIDismissalPolicy = .default
+            if let policy = options?.dismissalPolicy {
+                if(policy.timeIntervalSinceNow < 0) {
+                    dismissalPolicy = .after(policy)
+                } else {
+                    dismissalPolicy = .immediate
+                }
+            }
+            
+            let timestamp = options?.timestamp ?? Date()
+            
+            if #available(iOS 16.2, *) {
+                let endingState = ActivityContent.init(
+                    state: newState,
+                    staleDate: options?.staleDate,
+                    relevanceScore: options?.relevanceScore ?? 0
+                )
+                
+                if #available(iOS 17.2, *) {
+                    await activity.end(
+                        endingState,
+                        dismissalPolicy: dismissalPolicy,
+                        timestamp: timestamp
+                    )
+                } else {
+                    await activity.end(
+                        endingState,
+                        dismissalPolicy: dismissalPolicy
+                    )
+                }
+            } else {
+                await activity.end(using: newState, dismissalPolicy: dismissalPolicy)
+            }
         }
         
     }
@@ -294,10 +476,9 @@ class ActivityProxy : HybridActivityProxySpec {
         return activity.id
     }
     
-    
     var pushToken: String? {
         if let pushToken = activity.pushToken {
-            return String(data: pushToken, encoding: .utf8)
+            return parsePushToken(pushToken)
         }
         return nil
     }
@@ -309,23 +490,112 @@ class ActivityProxy : HybridActivityProxySpec {
     }
 }
 
-class ActivityKitModuleAttributes : ActivityAttributes {
-    public let data: ActivityProxyState
-    public struct ContentState: Codable, Hashable {
-        public let data: ActivityProxyState
-        
-        public init(dynamic: AnyMap) throws {
-            self.data = try ActivityProxyState(state: dynamic)
-        }
+class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {
+    typealias ContentState = GenericDictionaryStruct
+    
+    init(data: AnyMap) throws {
+        try super.init(state: data)
     }
-    init(dynamic: AnyMap) throws {
-        self.data = try ActivityProxyState(state: dynamic)
+    
+    required public init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 }
 
+@available(iOS 16.1, *)
+let activityAuthorizationInfo = ActivityKit.ActivityAuthorizationInfo()
+
 class ActivityKitModule : HybridActivityKitModuleSpec {
+    var pushToStartToken: String? {
+        if #available(iOS 17.2, *) {
+            if let token = Activity<ActivityKitModuleAttributes>.pushToStartToken {
+                if let tokenString = parsePushToken(token) {
+                    return tokenString
+                }
+            }
+        } else {
+            print("[react-native-activity-kit] pushToStartToken requires iOS 17.2 or later")
+        }
+        return nil
+    }
     
-    func startActivity(attributes: AnyMap, state: AnyMap, options: StartActivityOptions?) throws -> HybridActivityProxySpec{
+    var isAvailable: Bool {
+        if #available(iOS 16.1, *) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func subscribeToActivityUpdates(callback: @escaping (any HybridActivityProxySpec) -> Void) throws {
+        if #available(iOS 16.1, *) {
+            Task {
+                for await activity in Activity<ActivityKitModuleAttributes>.activityUpdates {
+                    callback(ActivityProxy(activity: activity))
+                }
+            }
+        }
+    }
+    
+    var areActivitiesEnabled: Bool {
+        if #available(iOS 16.1, *) {
+            return activityAuthorizationInfo.areActivitiesEnabled
+        } else {
+            return false
+        }
+    }
+    
+    var frequentPushesEnabled: Bool {
+        if #available(iOS 16.2, *) {
+            return activityAuthorizationInfo.frequentPushesEnabled
+        } else {
+            
+           print("[react-native-activity-kit] frequentPushesEnabled requires iOS 16.2 or later")
+            return false
+        }
+    }
+    
+    func subscribeToFrequentPushesUpdates(callback: @escaping (Bool) -> Void) throws {
+        Task {
+            if #available(iOS 16.2, *) {
+                for await isEnabled in activityAuthorizationInfo.frequentPushEnablementUpdates {
+                    callback(isEnabled)
+                }
+            } else {
+                print("[react-native-activity-kit] subscribeToActivityEnablementUpdates requires iOS 16.2 or later")
+            }
+        }
+    }
+    
+    func subscribeToActivityEnablementUpdates(callback: @escaping (Bool) -> Void) throws {
+        Task {
+            if #available(iOS 16.1, *) {
+                for await isEnabled in activityAuthorizationInfo.activityEnablementUpdates {
+                    callback(isEnabled)
+                }
+            } else {
+                print("[react-native-activity-kit] subscribeToActivityEnablementUpdates requires iOS 16.1 or later")
+            }
+        }
+    }
+    
+    func subscribeToPushToStartTokenUpdates(callback: @escaping (String) -> Void) throws {
+        Task {
+            if #available(iOS 17.2, *) {
+                for await token in Activity<ActivityKitModuleAttributes>.pushToStartTokenUpdates {
+                    if let tokenString = String(data: token, encoding: .utf8) {
+                        callback(tokenString)
+                    }
+                }
+            } else {
+                print("[react-native-activity-kit] subscribeToPushToStartTokenUpdates requires iOS 17.2 or later")
+            }
+        }
+    }
+    
+    
+    func startActivity(attributes: AnyMap, state: AnyMap, options: StartActivityOptions?) throws -> HybridActivityProxySpec {
+        
         if #available(iOS 16.1, *) {
             var pushType: PushType?
             
@@ -344,12 +614,9 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
                 pushType = nil
             }
             
-            let state = try ActivityKitModuleAttributes.ContentState(dynamic: state)
+            let state = try ActivityKitModuleAttributes.ContentState(data: state)
             
-            
-            
-            let attributes = try ActivityKitModuleAttributes(dynamic: attributes)
-            
+            let attributes = try ActivityKitModuleAttributes(data: attributes)
             
             var activity: Activity<ActivityKitModuleAttributes>
             

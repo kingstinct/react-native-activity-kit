@@ -178,8 +178,69 @@ class ActivityProxyState : Codable, Hashable, Equatable {
     }
 }
 
+func serializeAnyMap(_ metadata: [String: Any]?) -> AnyMap {
+    let serialized = AnyMap()
+    if let m = metadata {
+        for item in m {
+            if let bool = item.value as? Bool {
+                serialized.setBoolean(key: item.key, value: bool)
+            }
+
+            if let str = item.value as? String {
+                serialized.setString(key: item.key, value: str)
+            }
+
+            if let double = item.value as? Double {
+                serialized.setDouble(key: item.key, value: double)
+            }
+            
+            if let integer = item.value as? Int64 {
+                serialized.setBigInt(key: item.key, value: integer)
+            }
+
+            if let dict = item.value as? [String: AnyValue] {
+                serialized.setObject(key: item.key, value: dict)
+            }
+        }
+    }
+    return serialized
+}
+
 @available(iOS 16.1, *)
 class ActivityProxy : HybridActivityProxySpec {
+    // Swift
+    var attributes: NitroModules.AnyMap {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(activity.attributes.data)
+            if let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                return serializeAnyMap(jsonObject)
+            }
+        } catch {
+            // Handle error if needed
+        }
+        return AnyMap()
+    }
+    
+    var state: NitroModules.AnyMap {
+        do {
+            
+            if #available(iOS 16.2, *) {
+                let encoder = JSONEncoder()
+                let data = try encoder.encode(activity.content.state.data)
+                if let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    return serializeAnyMap(jsonObject)
+                }
+            } else {
+                // Fallback on earlier versions
+            }
+            
+        } catch {
+            // Handle error if needed
+        }
+        return AnyMap()
+    }
+    
     var activityState: ActivityState {
         switch activity.activityState {
         case .active:
@@ -214,6 +275,8 @@ class ActivityProxy : HybridActivityProxySpec {
     var id: String {
         return activity.id
     }
+    
+    
     var pushToken: String? {
         if let pushToken = activity.pushToken {
             return String(data: pushToken, encoding: .utf8)
@@ -229,12 +292,16 @@ class ActivityProxy : HybridActivityProxySpec {
 }
 
 class ActivityKitModuleAttributes : ActivityAttributes {
+    public let data: ActivityProxyState
     public struct ContentState: Codable, Hashable {
-        public let dynamic: ActivityProxyState
+        public let data: ActivityProxyState
         
         public init(dynamic: AnyMap) throws {
-            self.dynamic = try ActivityProxyState(state: dynamic)
+            self.data = try ActivityProxyState(state: dynamic)
         }
+    }
+    init(dynamic: AnyMap) throws {
+        self.data = try ActivityProxyState(state: dynamic)
     }
 }
 
@@ -243,8 +310,10 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
     func startActivity(attributes: AnyMap, state: AnyMap) throws -> HybridActivityProxySpec{
         if #available(iOS 16.2, *) {
             let activity = try Activity.request(
-                attributes: ActivityKitModuleAttributes(),
-                content: .init(state: ActivityKitModuleAttributes.ContentState(dynamic: state), staleDate: nil)
+                attributes: ActivityKitModuleAttributes(dynamic: attributes),
+                content: .init(state: ActivityKitModuleAttributes.ContentState(dynamic: state),
+                staleDate: nil
+              )
             )
             return ActivityProxy(activity: activity)
         } else {

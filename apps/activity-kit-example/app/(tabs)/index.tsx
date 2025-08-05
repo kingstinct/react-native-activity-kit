@@ -19,7 +19,13 @@ export default function HomeScreen() {
       }>
       <Button onPress={() => ActivityKit.startActivity({ name: 'Test Activity' }, { sdf: 1 })} title='Start Activity'>
       </Button>
-      <Button onPress={() => console.log(ActivityKit.getAllActivities().map(activity => activity.pushToken))} title='List Activities' />
+      <Button onPress={() => console.log(ActivityKit.getAllActivities().map(activity => ({
+        pushToken: activity.pushToken,
+        id: activity.id,
+        state: activity.state,
+        attributes: activity.attributes,
+        activityState: activity.activityState,
+      })))} title='List Activities' />
       {/* <Button onPress={() => ActivityKit.updateActivity('activity-id', { name: 'Updated Activity' })} title='Update Activity' />
       <Button onPress={() => ActivityKit.endActivity('activity-id')} title='End Activity' /> */}
       <ThemedView style={styles.titleContainer}>

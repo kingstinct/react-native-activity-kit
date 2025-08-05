@@ -13,6 +13,9 @@ export interface ActivityProxy extends HybridObject<{ ios: 'swift' }> {
   readonly activityState: ActivityState
   readonly pushToken?: string
 
+  readonly attributes: AnyMap
+  readonly state: AnyMap
+
   update(state: AnyMap): void
   end(state: AnyMap): void
 }

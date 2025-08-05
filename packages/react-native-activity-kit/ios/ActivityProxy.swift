@@ -1,4 +1,5 @@
 import ActivityKit
+import Foundation
 import NitroModules
 
 @available(iOS 16.1, *)

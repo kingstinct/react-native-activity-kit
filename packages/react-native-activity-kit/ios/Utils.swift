@@ -151,14 +151,14 @@ func convertToCodableValue(_ value: Any) -> CodableValue? {
     }
 }
 
-class GenericDictionary : Codable, Hashable {
+open class GenericDictionary : Codable, Hashable {
     var codable: CodableValue?
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(codable?.hashValue)
     }
     
-    static func == (lhs: GenericDictionary, rhs: GenericDictionary) -> Bool {
+    public static func == (lhs: GenericDictionary, rhs: GenericDictionary) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
     
@@ -178,14 +178,14 @@ class GenericDictionary : Codable, Hashable {
     }
 }
 
-struct GenericDictionaryStruct : Codable, Hashable {
+public struct GenericDictionaryStruct : Codable, Hashable {
     var codable: CodableValue?
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(codable?.hashValue)
     }
     
-    static func == (lhs: GenericDictionaryStruct, rhs: GenericDictionaryStruct) -> Bool {
+    public static func == (lhs: GenericDictionaryStruct, rhs: GenericDictionaryStruct) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
     
@@ -268,8 +268,9 @@ func parsePushToken(_ token: Data?) -> String? {
     return nil
 }
 
-class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {
-    typealias ContentState = GenericDictionaryStruct
+
+open class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {
+    public typealias ContentState = GenericDictionaryStruct
     
     init(data: AnyMap) throws {
         try super.init(state: data)
@@ -279,3 +280,5 @@ class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {
         try super.init(from: decoder)
     }
 }
+
+

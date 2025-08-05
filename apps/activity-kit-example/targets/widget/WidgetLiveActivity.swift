@@ -1,20 +1,11 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
-
-struct WidgetAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        // Dynamic stateful properties about your activity go here!
-        var emoji: String
-    }
-
-    // Fixed non-changing properties about your activity go here!
-    var name: String
-}
+import NitroActivityKit
 
 struct WidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: WidgetAttributes.self) { context in
+        ActivityConfiguration(for: ActivityKitModuleAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
                 Text("Hello \(context.state.emoji)")
@@ -49,25 +40,25 @@ struct WidgetLiveActivity: Widget {
     }
 }
 
-extension WidgetAttributes {
-    fileprivate static var preview: WidgetAttributes {
+extension ActivityKitModuleAttributes {
+    fileprivate static var preview: ActivityKitModuleAttributes {
         WidgetAttributes(name: "World")
     }
 }
 
-extension WidgetAttributes.ContentState {
-    fileprivate static var smiley: WidgetAttributes.ContentState {
+extension ActivityKitModuleAttributes.ContentState {
+    fileprivate static var smiley: ActivityKitModuleAttributes.ContentState {
         WidgetAttributes.ContentState(emoji: "😀")
      }
      
-     fileprivate static var starEyes: WidgetAttributes.ContentState {
+     fileprivate static var starEyes: ActivityKitModuleAttributes.ContentState {
          WidgetAttributes.ContentState(emoji: "🤩")
      }
 }
 
-#Preview("Notification", as: .content, using: WidgetAttributes.preview) {
+#Preview("Notification", as: .content, using: ActivityKitModuleAttributes.preview) {
    WidgetLiveActivity()
 } contentStates: {
-    WidgetAttributes.ContentState.smiley
-    WidgetAttributes.ContentState.starEyes
+  ActivityKitModuleAttributes.ContentState.smiley
+  ActivityKitModuleAttributes.ContentState.starEyes
 }

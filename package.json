@@ -1,8 +1,11 @@
 {
-  "name": "react-native-activity-kit",
-  "module": "index.ts",
-  "type": "module",
+  "name": "react-native-activity-kit-mono",
   "private": true,
+  "scripts": {
+    "codegen": "cd packages/react-native-activity-kit && bun run specs && cd ../../apps/activity-kit-example/ios && pod install",
+    "reinstall": "bun run clean:node_modules && bun install",
+    "clean:node_modules": "rm -rf node_modules/ && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

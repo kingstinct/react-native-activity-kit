@@ -8,6 +8,22 @@ export enum ActivityState {
   none,
 }
 
+export interface AlertConfiguration {
+  title: string
+  body: string
+  sound?: string
+}
+
+export interface UpdateOptions {
+  timestamp?: Date
+  alertConfiguration?: AlertConfiguration
+}
+
+export interface EndOptions {
+  timestamp?: Date
+  dismissalPolicy?: Date // undefined = default, less than now = end immediately, greater than now = end at that time
+}
+
 export interface ActivityProxy extends HybridObject<{ ios: 'swift' }> {
   readonly id: string
   readonly activityState: ActivityState
@@ -15,7 +31,9 @@ export interface ActivityProxy extends HybridObject<{ ios: 'swift' }> {
 
   readonly attributes: AnyMap
   readonly state: AnyMap
+  readonly staleDate?: Date
+  readonly relevanceScore?: number
 
-  update(state: AnyMap): void
-  end(state: AnyMap): void
+  update(state: AnyMap, options?: UpdateOptions): void
+  end(state: AnyMap, options?: EndOptions): void
 }

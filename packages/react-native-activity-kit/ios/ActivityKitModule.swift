@@ -208,6 +208,7 @@ func serializeAnyMap(_ metadata: [String: Any]?) -> AnyMap {
 
 @available(iOS 16.1, *)
 class ActivityProxy : HybridActivityProxySpec {
+    
     // Swift
     var attributes: NitroModules.AnyMap {
         do {
@@ -241,6 +242,22 @@ class ActivityProxy : HybridActivityProxySpec {
         return AnyMap()
     }
     
+    var relevanceScore: Double? {
+        if #available(iOS 16.2, *) {
+            return activity.content.relevanceScore
+        } else {
+            return nil
+        }
+    }
+    
+    var staleDate: Date? {
+        if #available(iOS 16.2, *) {
+            return activity.content.staleDate
+        } else {
+            return nil
+        }
+    }
+    
     var activityState: ActivityState {
         switch activity.activityState {
         case .active:
@@ -256,7 +273,7 @@ class ActivityProxy : HybridActivityProxySpec {
         }
     }
     
-    func update(state: NitroModules.AnyMap) throws -> Void {
+    func update(state: NitroModules.AnyMap, options: UpdateOptions?) throws -> Void {
         Task {
             let newState = try ActivityKitModuleAttributes.ContentState(dynamic: state)
             await activity.update(using: newState)
@@ -264,9 +281,10 @@ class ActivityProxy : HybridActivityProxySpec {
         
     }
     
-    func end(state: NitroModules.AnyMap) throws -> Void {
+    func end(state: NitroModules.AnyMap, options: EndOptions?) throws -> Void {
         Task {
             let newState = try ActivityKitModuleAttributes.ContentState(dynamic: state)
+            
             await activity.end(using: newState)
         }
         
@@ -305,48 +323,91 @@ class ActivityKitModuleAttributes : ActivityAttributes {
     }
 }
 
-
 class ActivityKitModule : HybridActivityKitModuleSpec {
-    func startActivity(attributes: AnyMap, state: AnyMap) throws -> HybridActivityProxySpec{
-        if #available(iOS 16.2, *) {
-            let activity = try Activity.request(
-                attributes: ActivityKitModuleAttributes(dynamic: attributes),
-                content: .init(state: ActivityKitModuleAttributes.ContentState(dynamic: state),
-                staleDate: nil
-              )
-            )
+    
+    func startActivity(attributes: AnyMap, state: AnyMap, options: StartActivityOptions?) throws -> HybridActivityProxySpec{
+        if #available(iOS 16.1, *) {
+            var pushType: PushType?
+            
+            switch options?.pushType {
+            case .first(let useTokenConfig):
+                if(useTokenConfig.token){
+                    pushType = .token
+                }
+            case .second(let pushChannelConfig):
+                if #available(iOS 18.0, *) {
+                    pushType = .channel(pushChannelConfig.channelName)
+                } else {
+                    // Fallback on earlier versions
+                }
+            default:
+                pushType = nil
+            }
+            
+            let state = try ActivityKitModuleAttributes.ContentState(dynamic: state)
+            
+            
+            
+            let attributes = try ActivityKitModuleAttributes(dynamic: attributes)
+            
+            
+            var activity: Activity<ActivityKitModuleAttributes>
+            
+            if #available(iOS 16.2, *) {
+                let content = ActivityContent<ActivityKitModuleAttributes.ContentState>.init(
+                    state: state,
+                    staleDate: options?.staleDate,
+                    relevanceScore: options?.relevanceScore ?? 0,
+                )
+                
+                if #available(iOS 18.0, *) {
+                    activity = try Activity.request(
+                        attributes: attributes,
+                        content: content,
+                        pushType: pushType,
+                        style: options?.style == .transient ? .transient : .standard
+                    )
+                } else {
+                    activity = try Activity.request(
+                        attributes: attributes,
+                        content: content,
+                        pushType: pushType
+                    )
+                }
+            } else {
+                activity = try Activity.request(attributes: attributes, contentState: state)
+            }
             return ActivityProxy(activity: activity)
         } else {
-            throw RuntimeError.error(withMessage: "ActivityKit is not available on this iOS version.")
+            throw RuntimeError.error(withMessage: "ActivityKit is not available on this version of iOS. Please use iOS 16.1 or later.")
         }
-        
     }
-    
-    func getActivityById(activityId: String) throws -> HybridActivityProxySpec? {
-        if #available(iOS 16.1, *) {
-            let activity = Activity<ActivityKitModuleAttributes>.activities.first(where: { $0.id == activityId })
-            if let activity = activity {
-                return ActivityProxy(activity: activity)
-            }
-        } else {
-            // Fallback on earlier versions
-        }
         
-        return nil
-    }
-    
-    func getAllActivities() throws -> [HybridActivityProxySpec] {
-        if #available(iOS 16.1, *) {
-            let activityProxies = Activity.activities
-                .map {
-                    ActivityProxy(activity: $0)
+        func getActivityById(activityId: String) throws -> HybridActivityProxySpec? {
+            if #available(iOS 16.1, *) {
+                let activity = Activity<ActivityKitModuleAttributes>.activities.first(where: { $0.id == activityId })
+                if let activity = activity {
+                    return ActivityProxy(activity: activity)
                 }
-            return activityProxies
-        } else {
-            // Fallback on earlier versions
+            } else {
+                // Fallback on earlier versions
+            }
+            
+            return nil
         }
-        return []
-    }
+        
+        func getAllActivities() throws -> [HybridActivityProxySpec] {
+            if #available(iOS 16.1, *) {
+                let activityProxies = Activity.activities
+                    .map {
+                        ActivityProxy(activity: $0)
+                    }
+                return activityProxies
+            } else {
+                // Fallback on earlier versions
+            }
+            return []
+        }
+        
     
-  
 }

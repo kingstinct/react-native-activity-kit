@@ -25,6 +25,8 @@ export default function HomeScreen() {
         state: activity.state,
         attributes: activity.attributes,
         activityState: activity.activityState,
+        staleDate: activity.staleDate,
+        relevanceScore: activity.relevanceScore,
       })))} title='List Activities' />
       {/* <Button onPress={() => ActivityKit.updateActivity('activity-id', { name: 'Updated Activity' })} title='Update Activity' />
       <Button onPress={() => ActivityKit.endActivity('activity-id')} title='End Activity' /> */}

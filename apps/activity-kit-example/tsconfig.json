@@ -3,11 +3,11 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": ["./apps/activity-kit-example/*"],
-      "@kingstinct/react-native-activity-kit": [
+      "@/*": ["./*"],
+      "react-native-activity-kit": [
         "./packages/react-native-activity-kit/src/index.ts"
       ],
-      "@kingstinct/react-native-activity-kit/*": [
+      "react-native-activity-kit/*": [
         "./packages/react-native-activity-kit/src/*"
       ]
     }

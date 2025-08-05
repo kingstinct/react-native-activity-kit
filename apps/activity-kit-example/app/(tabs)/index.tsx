@@ -17,11 +17,11 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-      <Button onPress={() => ActivityKit.startActivity({ name: 'Test Activity' })} title='Start Activity'>
+      <Button onPress={() => ActivityKit.startActivity({ name: 'Test Activity' }, { sdf: 1 })} title='Start Activity'>
       </Button>
-      <Button onPress={() => ActivityKit.listActivities().then(console.log)} title='List Activities' />
-      <Button onPress={() => ActivityKit.updateActivity('activity-id', { name: 'Updated Activity' })} title='Update Activity' />
-      <Button onPress={() => ActivityKit.endActivity('activity-id')} title='End Activity' />
+      <Button onPress={() => console.log(ActivityKit.getAllActivities().map(activity => activity.pushToken))} title='List Activities' />
+      {/* <Button onPress={() => ActivityKit.updateActivity('activity-id', { name: 'Updated Activity' })} title='Update Activity' />
+      <Button onPress={() => ActivityKit.endActivity('activity-id')} title='End Activity' /> */}
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />

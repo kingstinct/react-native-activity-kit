@@ -54,6 +54,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
+    "@expo/config-plugins": "^8.0.0",
     "@react-native/eslint-config": "0.80.2",
     "@types/jest": "^29.5.12",
     "@types/react": "^19.0.6",
@@ -68,6 +69,7 @@
     "typescript": "^5.5.4"
   },
   "peerDependencies": {
+    "@expo/config-plugins": "^8.0.0",
     "react": "*",
     "react-native": "*",
     "react-native-nitro-modules": "*"

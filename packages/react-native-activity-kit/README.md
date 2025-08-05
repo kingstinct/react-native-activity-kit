@@ -1,10 +1,62 @@
-# react-native-nitro-template
+# react-native-activity-kit
 
-This is a template for Nitro Modules.
+A React Native library for iOS Live Activities using ActivityKit.
 
-## Usage
+## Installation
 
-Clone this repo, and change all `$$*$$` names according to your `nitro.json` file.
+```bash
+npm install react-native-activity-kit
+# or
+yarn add react-native-activity-kit
+```
+
+## Expo Configuration
+
+If you're using Expo, add the plugin to your `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      "react-native-activity-kit"
+    ]
+  }
+}
+```
+
+The plugin automatically adds `NSSupportsLiveActivities: true` to your iOS Info.plist file.
+
+### Plugin Options
+
+You can configure the plugin with options:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "react-native-activity-kit",
+        {
+          "NSSupportsLiveActivities": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `NSSupportsLiveActivities` | boolean | `true` | Enables Live Activities support in your app |
+
+## Manual Setup
+
+If you're not using Expo, you need to manually add the following to your iOS `Info.plist`:
+
+```xml
+<key>NSSupportsLiveActivities</key>
+<true/>
+```
 
 ## Contributing
 

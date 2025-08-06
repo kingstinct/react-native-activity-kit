@@ -32,20 +32,16 @@ export interface ActivityKitModule extends HybridObject<{ ios: 'swift' }> {
   readonly pushToStartToken?: string
 
   subscribeToActivityUpdates(callback: (activity: ActivityProxy) => void): void
-  subscribeToFrequentPushesUpdates(
-    callback: (enabled: boolean) => void
-  ): void
+  subscribeToFrequentPushesUpdates(callback: (enabled: boolean) => void): void
   subscribeToActivityEnablementUpdates(
-    callback: (enabled: boolean) => void
+    callback: (enabled: boolean) => void,
   ): void
-  subscribeToPushToStartTokenUpdates(
-    callback: (token: string) => void
-  ): void
+  subscribeToPushToStartTokenUpdates(callback: (token: string) => void): void
 
   startActivity(
     attributes: AnyMap,
     state: AnyMap,
-    options?: StartActivityOptions
+    options?: StartActivityOptions,
   ): ActivityProxy
   getActivityById(activityId: string): ActivityProxy | null | undefined
   getAllActivities(): ActivityProxy[]

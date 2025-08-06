@@ -3,7 +3,7 @@ import Foundation
 import NitroModules
 
 @available(iOS 16.1, *)
-class ActivityProxy : HybridActivityProxySpec {
+class ActivityProxy: HybridActivityProxySpec {
     func subscribeToActivityStateUpdates(callback: @escaping (ActivityState) -> Void) throws {
         Task {
             for await activityState in activity.activityStateUpdates {
@@ -11,7 +11,7 @@ class ActivityProxy : HybridActivityProxySpec {
             }
         }
     }
-    
+
     func subscribeToPushTokenUpdates(callback: @escaping (String) -> Void) throws {
         Task {
             for await pushToken in activity.pushTokenUpdates {
@@ -21,7 +21,7 @@ class ActivityProxy : HybridActivityProxySpec {
             }
         }
     }
-    
+
     func subscribeToStateUpdates(callback: @escaping (ActivityStateUpdate) -> Void) throws {
         Task {
             if #available(iOS 16.2, *) {
@@ -44,7 +44,7 @@ class ActivityProxy : HybridActivityProxySpec {
             }
         }
     }
-    
+
     // Swift
     var attributes: AnyMap {
         do {
@@ -58,7 +58,7 @@ class ActivityProxy : HybridActivityProxySpec {
         }
         return AnyMap()
     }
-    
+
     var state: AnyMap {
         do {
             let encoder = JSONEncoder()
@@ -68,7 +68,7 @@ class ActivityProxy : HybridActivityProxySpec {
             } else {
                 data = activity.contentState
             }
-            
+
             let encodedData = try encoder.encode(data)
             if let jsonObject = try JSONSerialization.jsonObject(with: encodedData) as? [String: Any] {
                 return serializeAnyMap(jsonObject)
@@ -78,7 +78,7 @@ class ActivityProxy : HybridActivityProxySpec {
         }
         return AnyMap()
     }
-    
+
     var relevanceScore: Double? {
         if #available(iOS 16.2, *) {
             return activity.content.relevanceScore
@@ -86,7 +86,7 @@ class ActivityProxy : HybridActivityProxySpec {
             return nil
         }
     }
-    
+
     var staleDate: Date? {
         if #available(iOS 16.2, *) {
             return activity.content.staleDate
@@ -94,7 +94,7 @@ class ActivityProxy : HybridActivityProxySpec {
             return nil
         }
     }
-    
+
     var activityState: ActivityState {
         switch activity.activityState {
         case .active:
@@ -109,22 +109,22 @@ class ActivityProxy : HybridActivityProxySpec {
             return .none
         }
     }
-    
+
     private func createContentState(from state: AnyMap, mergeWithPrevious: Bool) throws -> ActivityKitModuleAttributes.ContentState {
         let incoming = anyMapToDictionary(state)
-        
+
         if mergeWithPrevious {
             return try ActivityKitModuleAttributes.ContentState.merge(previous: activity.contentState, with: incoming)
         } else {
             return try ActivityKitModuleAttributes.ContentState(data: incoming)
         }
     }
-    
-    func update(state: AnyMap, options: UpdateOptions?) throws -> Void {
+
+    func update(state: AnyMap, options: UpdateOptions?) throws {
         Task {
             let contentState = try createContentState(from: state, mergeWithPrevious: options?.mergeWithPreviousState == true)
-            
-            var alertConfiguration: ActivityKit.AlertConfiguration? = nil
+
+            var alertConfiguration: ActivityKit.AlertConfiguration?
             if let config = options?.alertConfiguration {
                 alertConfiguration = ActivityKit.AlertConfiguration(
                     title: LocalizedStringResource(stringLiteral: config.title),
@@ -134,14 +134,14 @@ class ActivityProxy : HybridActivityProxySpec {
                         : .default
                 )
             }
-            
+
             if #available(iOS 16.2, *) {
                 let updatedState = ActivityContent.init(
                     state: contentState,
                     staleDate: options?.staleDate,
                     relevanceScore: options?.relevanceScore ?? 0
                 )
-                
+
                 if #available(iOS 17.2, *) {
                     await activity.update(
                         updatedState,
@@ -162,29 +162,29 @@ class ActivityProxy : HybridActivityProxySpec {
             }
         }
     }
-    
-    func end(state: AnyMap, options: EndOptions?) throws -> Void {
+
+    func end(state: AnyMap, options: EndOptions?) throws {
         Task {
             let newState = try createContentState(from: state, mergeWithPrevious: options?.mergeWithPreviousState == true)
-            
+
             var dismissalPolicy: ActivityUIDismissalPolicy = .default
             if let policy = options?.dismissalPolicy {
-                if(policy.timeIntervalSinceNow < 0) {
+                if policy.timeIntervalSinceNow < 0 {
                     dismissalPolicy = .after(policy)
                 } else {
                     dismissalPolicy = .immediate
                 }
             }
-            
+
             let timestamp = options?.timestamp ?? Date()
-            
+
             if #available(iOS 16.2, *) {
                 let endingState = ActivityContent.init(
                     state: newState,
                     staleDate: options?.staleDate,
                     relevanceScore: options?.relevanceScore ?? 0
                 )
-                
+
                 if #available(iOS 17.2, *) {
                     await activity.end(
                         endingState,
@@ -201,22 +201,22 @@ class ActivityProxy : HybridActivityProxySpec {
                 await activity.end(using: newState, dismissalPolicy: dismissalPolicy)
             }
         }
-        
+
     }
-    
+
     var id: String {
         return activity.id
     }
-    
+
     var pushToken: String? {
         if let pushToken = activity.pushToken {
             return parsePushToken(pushToken)
         }
         return nil
     }
-    
+
     var activity: Activity<ActivityKitModuleAttributes>
-    
+
     init(activity: Activity<ActivityKitModuleAttributes>) {
         self.activity = activity
     }

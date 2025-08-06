@@ -45,9 +45,11 @@ export interface ActivityProxy extends HybridObject<{ ios: 'swift' }> {
   readonly state: AnyMap
   readonly staleDate?: Date
   readonly relevanceScore?: number
-  
+
   subscribeToPushTokenUpdates(callback: (token: string) => void): void
-  subscribeToActivityStateUpdates(callback: (state: ActivityState) => void): void
+  subscribeToActivityStateUpdates(
+    callback: (state: ActivityState) => void,
+  ): void
   subscribeToStateUpdates(callback: (state: ActivityStateUpdate) => void): void
 
   update(state: AnyMap, options?: UpdateOptions): void

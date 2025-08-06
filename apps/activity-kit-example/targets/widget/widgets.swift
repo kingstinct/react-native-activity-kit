@@ -9,7 +9,7 @@ struct Provider: AppIntentTimelineProvider {
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
         SimpleEntry(date: Date(), configuration: configuration)
     }
-    
+
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
         var entries: [SimpleEntry] = []
 
@@ -34,7 +34,7 @@ struct SimpleEntry: TimelineEntry {
     let configuration: ConfigurationAppIntent
 }
 
-struct widgetEntryView : View {
+struct widgetEntryView: View {
     var entry: Provider.Entry
 
     var body: some View {
@@ -65,7 +65,7 @@ extension ConfigurationAppIntent {
         intent.favoriteEmoji = "😀"
         return intent
     }
-    
+
     fileprivate static var starEyes: ConfigurationAppIntent {
         let intent = ConfigurationAppIntent()
         intent.favoriteEmoji = "🤩"

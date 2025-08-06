@@ -1,15 +1,11 @@
 {
   "$schema": "https://nitro.margelo.com/nitro.schema.json",
-  "cxxNamespace": [
-    "activitykit"
-  ],
+  "cxxNamespace": ["activitykit"],
   "ios": {
     "iosModuleName": "NitroActivityKit"
   },
   "android": {
-    "androidNamespace": [
-      "activitykit"
-    ],
+    "androidNamespace": ["activitykit"],
     "androidCxxLibName": "NitroActivityKit"
   },
   "autolinking": {
@@ -17,7 +13,5 @@
       "swift": "ActivityKitModule"
     }
   },
-  "ignorePaths": [
-    "**/node_modules"
-  ]
+  "ignorePaths": ["**/node_modules"]
 }

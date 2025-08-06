@@ -41,13 +41,15 @@ const withInfoPlistPlugin = (config, props) =>
  * @type {ConfigPlugin<ActivityKitConfig>}
  */
 const activityKitAppPlugin = (config, props) =>
-  withPlugins(config, [
-    [withInfoPlistPlugin, props],
-  ])
+  withPlugins(config, [[withInfoPlistPlugin, props]])
 
 const pkg = require('./package.json')
 
 /**
  * @type {ConfigPlugin<ActivityKitConfig>}
  */
-module.exports = createRunOncePlugin(activityKitAppPlugin, pkg.name, pkg.version)
+module.exports = createRunOncePlugin(
+  activityKitAppPlugin,
+  pkg.name,
+  pkg.version,
+)

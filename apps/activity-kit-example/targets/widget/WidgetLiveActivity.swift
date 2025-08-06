@@ -44,10 +44,10 @@ struct WidgetLiveActivity: Widget {
 extension ActivityKitModuleAttributes {
     fileprivate static var preview: ActivityKitModuleAttributes {
       do {
-        return try ActivityKitModuleAttributes(data: Dictionary<String, Any>())
+        return try ActivityKitModuleAttributes(data: [String: Any]())
       } catch {
         // Fallback to empty attributes on error
-        return try! ActivityKitModuleAttributes(data: Dictionary<String, Any>())
+        return try! ActivityKitModuleAttributes(data: [String: Any]())
       }
     }
 }
@@ -56,22 +56,22 @@ extension ActivityKitModuleAttributes.ContentState {
     fileprivate static var smiley: ActivityKitModuleAttributes.ContentState {
       do {
         return try ActivityKitModuleAttributes.ContentState(
-          data: Dictionary<String, Any>()
+          data: [String: Any]()
         )
       } catch {
         // Fallback to empty content state on error
-        return try! ActivityKitModuleAttributes.ContentState(data: Dictionary<String, Any>())
+        return try! ActivityKitModuleAttributes.ContentState(data: [String: Any]())
       }
      }
-     
+
      fileprivate static var starEyes: ActivityKitModuleAttributes.ContentState {
        do {
          return try ActivityKitModuleAttributes.ContentState(
-           data: Dictionary<String, Any>()
+           data: [String: Any]()
          )
        } catch {
          // Fallback to empty content state on error
-         return try! ActivityKitModuleAttributes.ContentState(data: Dictionary<String, Any>())
+         return try! ActivityKitModuleAttributes.ContentState(data: [String: Any]())
        }
      }
 }

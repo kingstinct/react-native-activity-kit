@@ -4,7 +4,7 @@ import NitroModules
 @available(iOS 16.1, *)
 let activityAuthorizationInfo = ActivityKit.ActivityAuthorizationInfo()
 
-class ActivityKitModule : HybridActivityKitModuleSpec {
+class ActivityKitModule: HybridActivityKitModuleSpec {
     var pushToStartToken: String? {
         if #available(iOS 17.2, *) {
             if let token = Activity<ActivityKitModuleAttributes>.pushToStartToken {
@@ -17,7 +17,7 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
         }
         return nil
     }
-    
+
     var isAvailable: Bool {
         if #available(iOS 16.1, *) {
             return true
@@ -25,7 +25,7 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             return false
         }
     }
-    
+
     func subscribeToActivityUpdates(callback: @escaping (any HybridActivityProxySpec) -> Void) throws {
         if #available(iOS 16.1, *) {
             Task {
@@ -35,7 +35,7 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             }
         }
     }
-    
+
     var areActivitiesEnabled: Bool {
         if #available(iOS 16.1, *) {
             return activityAuthorizationInfo.areActivitiesEnabled
@@ -43,17 +43,17 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             return false
         }
     }
-    
+
     var frequentPushesEnabled: Bool {
         if #available(iOS 16.2, *) {
             return activityAuthorizationInfo.frequentPushesEnabled
         } else {
-            
+
            print("[react-native-activity-kit] frequentPushesEnabled requires iOS 16.2 or later")
             return false
         }
     }
-    
+
     func subscribeToFrequentPushesUpdates(callback: @escaping (Bool) -> Void) throws {
         Task {
             if #available(iOS 16.2, *) {
@@ -65,7 +65,7 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             }
         }
     }
-    
+
     func subscribeToActivityEnablementUpdates(callback: @escaping (Bool) -> Void) throws {
         Task {
             if #available(iOS 16.1, *) {
@@ -77,7 +77,7 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             }
         }
     }
-    
+
     func subscribeToPushToStartTokenUpdates(callback: @escaping (String) -> Void) throws {
         Task {
             if #available(iOS 17.2, *) {
@@ -91,16 +91,15 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             }
         }
     }
-    
-    
+
     func startActivity(attributes: AnyMap, state: AnyMap, options: StartActivityOptions?) throws -> HybridActivityProxySpec {
-        
+
         if #available(iOS 16.1, *) {
             var pushType: PushType?
-            
+
             switch options?.pushType {
             case .first(let useTokenConfig):
-                if(useTokenConfig.token){
+                if useTokenConfig.token {
                     pushType = .token
                 }
             case .second(let pushChannelConfig):
@@ -112,20 +111,20 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             default:
                 pushType = nil
             }
-            
+
             let state = try ActivityKitModuleAttributes.ContentState(data: anyMapToDictionary(state))
-            
+
             let attributes = try ActivityKitModuleAttributes(data: anyMapToDictionary(attributes))
-            
+
             var activity: Activity<ActivityKitModuleAttributes>
-            
+
             if #available(iOS 16.2, *) {
                 let content = ActivityContent<ActivityKitModuleAttributes.ContentState>.init(
                     state: state,
                     staleDate: options?.staleDate,
                     relevanceScore: options?.relevanceScore ?? 0,
                 )
-                
+
                 if #available(iOS 18.0, *) {
                     activity = try Activity.request(
                         attributes: attributes,
@@ -148,7 +147,7 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             throw RuntimeError.error(withMessage: "ActivityKit is not available on this version of iOS. Please use iOS 16.1 or later.")
         }
     }
-        
+
         func getActivityById(activityId: String) throws -> HybridActivityProxySpec? {
             if #available(iOS 16.1, *) {
                 let activity = Activity<ActivityKitModuleAttributes>.activities.first(where: { $0.id == activityId })
@@ -158,10 +157,10 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             } else {
                 // Fallback on earlier versions
             }
-            
+
             return nil
         }
-        
+
         func getAllActivities() throws -> [HybridActivityProxySpec] {
             if #available(iOS 16.1, *) {
                 let activityProxies = Activity.activities
@@ -174,6 +173,5 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
             }
             return []
         }
-        
-    
+
 }

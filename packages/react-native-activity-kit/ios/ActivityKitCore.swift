@@ -14,11 +14,11 @@ public extension DictionaryAccessible {
     func getString(_ key: String) -> String {
         return self[key] as? String ?? ""
     }
-    
+
     // Convenience method to convert any value to string
     func getAsString(_ key: String) -> String {
         guard let value = self[key] else { return "" }
-        
+
         switch value {
         case let stringValue as String:
             return stringValue
@@ -36,49 +36,49 @@ public extension DictionaryAccessible {
             return String(describing: value)
         }
     }
-    
+
     // Convenience method to get boolean values safely
     func getBool(_ key: String) -> Bool {
         return self[key] as? Bool ?? false
     }
-    
+
     // Convenience method to get date values safely
     func getDate(_ key: String) -> Date? {
         guard let value = self[key] else { return nil }
-        
+
         if let date = value as? Date {
             return date
         }
-        
+
         if let timestamp = value as? Double {
             return Date(timeIntervalSince1970: timestamp / 1000) // Assuming milliseconds
         }
-        
+
         if let timestamp = value as? Int {
             return Date(timeIntervalSince1970: Double(timestamp) / 1000) // Assuming milliseconds
         }
-        
+
         if let dateString = value as? String {
             let formatter = ISO8601DateFormatter()
             return formatter.date(from: dateString)
         }
-        
+
         return nil
     }
-    
+
     // Convenience method to get color values safely
     func getAsColor(_ key: String) -> Color? {
         guard let value = self[key] else { return nil }
-        
+
         if let colorString = value as? String {
             // Handle hex colors (#RRGGBB or #RRGGBBAA)
             if colorString.hasPrefix("#") {
                 let hex = String(colorString.dropFirst())
                 var hexInt: UInt64 = 0
-                
+
                 if Scanner(string: hex).scanHexInt64(&hexInt) {
                     let red, green, blue, alpha: Double
-                    
+
                     switch hex.count {
                     case 6: // RGB
                         red = Double((hexInt & 0xFF0000) >> 16) / 255.0
@@ -93,15 +93,15 @@ public extension DictionaryAccessible {
                     default:
                         return nil
                     }
-                    
+
                     return Color(red: red, green: green, blue: blue, opacity: alpha)
                 }
             }
-            
+
             // Handle named colors
             return Color(colorString)
         }
-        
+
         // Handle RGB array [r, g, b] or [r, g, b, a]
         if let rgbArray = value as? [Double] {
             switch rgbArray.count {
@@ -113,7 +113,7 @@ public extension DictionaryAccessible {
                 return nil
             }
         }
-        
+
         return nil
     }
 }
@@ -191,7 +191,7 @@ func convertToCodableValue(_ value: Any) -> CodableValue? {
 
 func extractValue(from codableValue: CodableValue?) -> Any? {
     guard let codableValue = codableValue else { return nil }
-    
+
     switch codableValue {
     case .string(let stringValue):
         return stringValue
@@ -216,20 +216,20 @@ func extractValue(from codableValue: CodableValue?) -> Any? {
 
 open class GenericDictionary: Codable, Hashable, DictionaryAccessible {
     var codable: CodableValue?
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(codable?.hashValue)
     }
-    
+
     public static func == (lhs: GenericDictionary, rhs: GenericDictionary) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
-    
+
     required public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         self.codable = try container.decode(CodableValue.self)
     }
-    
+
     public init(state: [String: Any]) throws {
         self.codable = convertToCodableValue(state)
     }
@@ -238,7 +238,7 @@ open class GenericDictionary: Codable, Hashable, DictionaryAccessible {
         var container = encoder.singleValueContainer()
         try container.encode(codable)
     }
-    
+
     // Dictionary-like access
     public subscript(key: String) -> Any? {
         get {
@@ -255,13 +255,13 @@ open class GenericDictionary: Codable, Hashable, DictionaryAccessible {
             codable = .dictionary(dict)
         }
     }
-    
+
     // Get all keys
     public var keys: [String] {
         guard case let .dictionary(dict) = codable else { return [] }
         return Array(dict.keys)
     }
-    
+
     // Convert to regular dictionary
     public func toDictionary() -> [String: Any] {
         guard case let .dictionary(dict) = codable else { return [:] }
@@ -275,20 +275,20 @@ open class GenericDictionary: Codable, Hashable, DictionaryAccessible {
 
 public struct GenericDictionaryStruct: Codable, Hashable, DictionaryAccessible {
     var codable: CodableValue?
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(codable?.hashValue)
     }
-    
+
     public static func == (lhs: GenericDictionaryStruct, rhs: GenericDictionaryStruct) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         self.codable = try container.decode(CodableValue.self)
     }
-    
+
     public init(data: [String: Any]) throws {
         self.codable = convertToCodableValue(data)
     }
@@ -297,7 +297,7 @@ public struct GenericDictionaryStruct: Codable, Hashable, DictionaryAccessible {
         var container = encoder.singleValueContainer()
         try container.encode(codable)
     }
-    
+
     // Dictionary-like access
     public subscript(key: String) -> Any? {
         get {
@@ -314,13 +314,13 @@ public struct GenericDictionaryStruct: Codable, Hashable, DictionaryAccessible {
             codable = .dictionary(dict)
         }
     }
-    
+
     // Get all keys
     public var keys: [String] {
         guard case let .dictionary(dict) = codable else { return [] }
         return Array(dict.keys)
     }
-    
+
     // Convert to regular dictionary
     public func toDictionary() -> [String: Any] {
         guard case let .dictionary(dict) = codable else { return [:] }
@@ -330,27 +330,27 @@ public struct GenericDictionaryStruct: Codable, Hashable, DictionaryAccessible {
         }
         return result
     }
-    
+
     // Create new instance by merging with another, incoming values win
     public static func merge(previous: GenericDictionaryStruct, with incoming: [String: Any]) throws -> GenericDictionaryStruct {
         var mergedData = previous.toDictionary()
-        
+
         // Merge dictionaries, incoming values win
         for (key, value) in incoming {
             mergedData[key] = value
         }
-        
+
         return try GenericDictionaryStruct(data: mergedData)
     }
 }
 
 open class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {
     public typealias ContentState = GenericDictionaryStruct
-    
-    public init(data: Dictionary<String, Any>) throws {
+
+    public init(data: [String: Any]) throws {
         try super.init(state: data)
     }
-    
+
     required public init(from decoder: Decoder) throws {
         try super.init(from: decoder)
     }

@@ -1,6 +1,7 @@
 excluded:
   - "**/*.generated.*"
   - "**/node_modules"
+  - "**/generated/**"
 
 disabled_rules:
   - trailing_comma
@@ -13,3 +14,4 @@ disabled_rules:
   - cyclomatic_complexity
   - force_cast
   - force_try
+  - switch_case_alignment

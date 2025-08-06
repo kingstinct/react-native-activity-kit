@@ -49,7 +49,7 @@ func serializeAnyMap(_ metadata: [String: Any]?) -> AnyMap {
             if let double = item.value as? Double {
                 serialized.setDouble(key: item.key, value: double)
             }
-            
+
             if let integer = item.value as? Int64 {
                 serialized.setBigInt(key: item.key, value: integer)
             }
@@ -65,12 +65,12 @@ func serializeAnyMap(_ metadata: [String: Any]?) -> AnyMap {
 @available(iOS 16.1, *)
 func serializeContentState(contentState: GenericDictionaryStruct) throws -> AnyMap {
     let encoder = JSONEncoder()
-    
+
     let encodedData = try encoder.encode(contentState)
     if let jsonObject = try JSONSerialization.jsonObject(with: encodedData) as? [String: Any] {
         return serializeAnyMap(jsonObject)
     }
-    
+
     return AnyMap()
 }
 

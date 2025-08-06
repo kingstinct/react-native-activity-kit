@@ -9,6 +9,7 @@ struct WidgetLiveActivity: Widget {
             // Lock screen/banner UI goes here
             VStack {
               Text("Hello \(context.state.getAsString("name"))")
+              Text(context.state.getDate("startedTimerAt") ?? Date(), style: .timer)
             }
             .activityBackgroundTint(Color.cyan)
             .activitySystemActionForegroundColor(Color.black)

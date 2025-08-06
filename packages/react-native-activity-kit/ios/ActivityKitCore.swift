@@ -247,6 +247,30 @@ public struct GenericDictionaryStruct: Codable, Hashable {
     public func getBool(_ key: String) -> Bool {
         return self[key] as? Bool ?? false
     }
+    
+    // Convenience method to get date values safely
+    public func getDate(_ key: String) -> Date? {
+        guard let value = self[key] else { return nil }
+        
+        if let date = value as? Date {
+            return date
+        }
+        
+        if let timestamp = value as? Double {
+            return Date(timeIntervalSince1970: timestamp / 1000) // Assuming milliseconds
+        }
+        
+        if let timestamp = value as? Int {
+            return Date(timeIntervalSince1970: Double(timestamp) / 1000) // Assuming milliseconds
+        }
+        
+        if let dateString = value as? String {
+            let formatter = ISO8601DateFormatter()
+            return formatter.date(from: dateString)
+        }
+        
+        return nil
+    }
 }
 
 open class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {

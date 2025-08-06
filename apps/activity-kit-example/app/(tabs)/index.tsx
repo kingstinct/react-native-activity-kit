@@ -22,7 +22,7 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-        <Button onPress={() => setLatestActivityId(ActivityKit.startActivity({ name: 'Test Activity' }, { name: "Robert" }).id)} title='Start Activity'>
+        <Button onPress={() => setLatestActivityId(ActivityKit.startActivity({ name: 'Test Activity' }, { name: "Robert", startedTimerAt: new Date("2025-08-06").valueOf() }).id)} title='Start Activity'>
       </Button>
       <Button onPress={() => Notifications.requestPermissionsAsync({
     ios: {

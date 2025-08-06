@@ -5,5 +5,5 @@ module.exports = (_config) => ({
   entitlements: {
     /* Add entitlements */
   },
-  deploymentTarget: '16.1', // Required for ActivityKit support
+  deploymentTarget: '18.0', // Required for ActivityKit support
 })

@@ -1,5 +1,5 @@
 {
-  "name": "react-native-activity-kit",
+  "name": "@kingstinct/react-native-activity-kit",
   "version": "0.0.2",
   "description": "react-native-activity-kit",
   "main": "lib/index",

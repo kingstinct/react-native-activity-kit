@@ -3,6 +3,7 @@ import * as Notifications from 'expo-notifications'
 import { useState } from 'react'
 import { Button, Platform, StyleSheet } from 'react-native'
 import { ActivityKit } from 'react-native-activity-kit' // Importing the ActivityKit module
+import { ActivityStyle } from 'react-native-activity-kit/lib/specs/ActivityKitModule.nitro'
 import { HelloWave } from '@/components/HelloWave'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import { ThemedText } from '@/components/ThemedText'
@@ -28,6 +29,11 @@ export default function HomeScreen() {
               {
                 name: 'Robert',
                 startedTimerAt: new Date('2025-08-06').valueOf(),
+              },
+              {
+                relevanceScore: 1,
+                staleDate: new Date('2025-08-07'),
+                style: ActivityStyle.standard,
               },
             ).id,
           )

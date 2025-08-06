@@ -1,0 +1,66 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "linter": {
+    "rules": {
+      "recommended": true,
+      "correctness": {
+        "useHookAtTopLevel": "error",
+        "useExhaustiveDependencies": "error"
+      }
+    }
+  },
+  "formatter": {
+    "indentWidth": 2,
+    "indentStyle": "space"
+  },
+  "javascript": {
+    "linter": {
+      "enabled": true
+    },
+    "formatter": {
+      "indentWidth": 2,
+      "indentStyle": "space",
+      "semicolons": "asNeeded",
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["packages/react-native-healthkit/package.json"],
+      "json": {
+        "formatter": {
+          "lineWidth": 60
+        }
+      }
+    },
+    {
+      "includes": [
+        "packages/react-native-healthkit/tsconfig.cjs.json",
+        "packages/react-native-healthkit/tsconfig.esm.json",
+        "packages/react-native-healthkit/tsconfig.declarations.json"
+      ],
+      "json": {
+        "parser": {
+          "allowComments": true,
+          "allowTrailingCommas": true
+        }
+      }
+    }
+  ],
+  "vcs": {
+    "defaultBranch": "master",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "**/*",
+      "!**/docs/**",
+      "!**/lib/**",
+      "!**/.expo/**",
+      "!**/ios/**",
+      "!.vscode/*",
+      "!.claude/*"
+    ]
+  }
+}

@@ -1,0 +1,2 @@
+# bun run test
+bun run typecheck

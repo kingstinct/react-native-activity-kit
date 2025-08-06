@@ -54,12 +54,11 @@
   "devDependencies": {
     "@expo/config-plugins": "^8.0.0",
     "@types/jest": "^29.5.12",
-    "@types/react": "^19.0.6",
+    "@types/react": "~19.0.10",
     "nitro-codegen": "*",
-    "react": "19.1.0",
-    "react-native": "0.80.2",
-    "react-native-nitro-modules": "*",
-    "typescript": "^5.5.4"
+    "react": "19.0.0",
+    "react-native": "0.79.5",
+    "react-native-nitro-modules": "*"
   },
   "peerDependencies": {
     "@expo/config-plugins": "^8.0.0",

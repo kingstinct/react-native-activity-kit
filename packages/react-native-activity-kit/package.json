@@ -1,6 +1,6 @@
 {
   "name": "react-native-activity-kit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "react-native-activity-kit",
   "main": "lib/index",
   "module": "lib/index",

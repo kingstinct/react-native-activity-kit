@@ -1,7 +1,122 @@
 import ActivityKit
+import SwiftUI
 
 // App Extension-safe implementation of ActivityKit types
 // This file can be used in App Extensions without React Native dependencies
+
+// Protocol for dictionary-like access with convenience methods
+public protocol DictionaryAccessible {
+    subscript(key: String) -> Any? { get }
+}
+
+public extension DictionaryAccessible {
+    // Convenience method to get string values safely
+    func getString(_ key: String) -> String {
+        return self[key] as? String ?? ""
+    }
+    
+    // Convenience method to convert any value to string
+    func getAsString(_ key: String) -> String {
+        guard let value = self[key] else { return "" }
+        
+        switch value {
+        case let stringValue as String:
+            return stringValue
+        case let intValue as Int:
+            return String(intValue)
+        case let doubleValue as Double:
+            return String(doubleValue)
+        case let boolValue as Bool:
+            return boolValue ? "true" : "false"
+        case let arrayValue as [Any]:
+            return arrayValue.map { String(describing: $0) }.joined(separator: ", ")
+        case let dictValue as [String: Any]:
+            return dictValue.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
+        default:
+            return String(describing: value)
+        }
+    }
+    
+    // Convenience method to get boolean values safely
+    func getBool(_ key: String) -> Bool {
+        return self[key] as? Bool ?? false
+    }
+    
+    // Convenience method to get date values safely
+    func getDate(_ key: String) -> Date? {
+        guard let value = self[key] else { return nil }
+        
+        if let date = value as? Date {
+            return date
+        }
+        
+        if let timestamp = value as? Double {
+            return Date(timeIntervalSince1970: timestamp / 1000) // Assuming milliseconds
+        }
+        
+        if let timestamp = value as? Int {
+            return Date(timeIntervalSince1970: Double(timestamp) / 1000) // Assuming milliseconds
+        }
+        
+        if let dateString = value as? String {
+            let formatter = ISO8601DateFormatter()
+            return formatter.date(from: dateString)
+        }
+        
+        return nil
+    }
+    
+    // Convenience method to get color values safely
+    func getAsColor(_ key: String) -> Color? {
+        guard let value = self[key] else { return nil }
+        
+        if let colorString = value as? String {
+            // Handle hex colors (#RRGGBB or #RRGGBBAA)
+            if colorString.hasPrefix("#") {
+                let hex = String(colorString.dropFirst())
+                var hexInt: UInt64 = 0
+                
+                if Scanner(string: hex).scanHexInt64(&hexInt) {
+                    let red, green, blue, alpha: Double
+                    
+                    switch hex.count {
+                    case 6: // RGB
+                        red = Double((hexInt & 0xFF0000) >> 16) / 255.0
+                        green = Double((hexInt & 0x00FF00) >> 8) / 255.0
+                        blue = Double(hexInt & 0x0000FF) / 255.0
+                        alpha = 1.0
+                    case 8: // RGBA
+                        red = Double((hexInt & 0xFF000000) >> 24) / 255.0
+                        green = Double((hexInt & 0x00FF0000) >> 16) / 255.0
+                        blue = Double((hexInt & 0x0000FF00) >> 8) / 255.0
+                        alpha = Double(hexInt & 0x000000FF) / 255.0
+                    default:
+                        return nil
+                    }
+                    
+                    return Color(red: red, green: green, blue: blue, opacity: alpha)
+                }
+            }
+            
+            // Handle named colors
+            return Color(colorString)
+        }
+        
+        // Handle RGB array [r, g, b] or [r, g, b, a]
+        if let rgbArray = value as? [Double] {
+            switch rgbArray.count {
+            case 3:
+                return Color(red: rgbArray[0], green: rgbArray[1], blue: rgbArray[2])
+            case 4:
+                return Color(red: rgbArray[0], green: rgbArray[1], blue: rgbArray[2], opacity: rgbArray[3])
+            default:
+                return nil
+            }
+        }
+        
+        return nil
+    }
+}
 
 enum CodableValue: Codable, Hashable {
     case string(String)
@@ -99,7 +214,7 @@ func extractValue(from codableValue: CodableValue?) -> Any? {
     }
 }
 
-open class GenericDictionary: Codable, Hashable {
+open class GenericDictionary: Codable, Hashable, DictionaryAccessible {
     var codable: CodableValue?
     
     public func hash(into hasher: inout Hasher) {
@@ -158,7 +273,7 @@ open class GenericDictionary: Codable, Hashable {
     }
 }
 
-public struct GenericDictionaryStruct: Codable, Hashable {
+public struct GenericDictionaryStruct: Codable, Hashable, DictionaryAccessible {
     var codable: CodableValue?
     
     public func hash(into hasher: inout Hasher) {
@@ -214,62 +329,6 @@ public struct GenericDictionaryStruct: Codable, Hashable {
             result[key] = extractValue(from: value)
         }
         return result
-    }
-    
-    // Convenience method to get string values safely
-    public func getString(_ key: String) -> String {
-        return self[key] as? String ?? ""
-    }
-    
-    // Convenience method to convert any value to string
-    public func getAsString(_ key: String) -> String {
-        guard let value = self[key] else { return "" }
-        
-        switch value {
-        case let stringValue as String:
-            return stringValue
-        case let intValue as Int:
-            return String(intValue)
-        case let doubleValue as Double:
-            return String(doubleValue)
-        case let boolValue as Bool:
-            return boolValue ? "true" : "false"
-        case let arrayValue as [Any]:
-            return arrayValue.map { String(describing: $0) }.joined(separator: ", ")
-        case let dictValue as [String: Any]:
-            return dictValue.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
-        default:
-            return String(describing: value)
-        }
-    }
-    
-    // Convenience method to get boolean values safely
-    public func getBool(_ key: String) -> Bool {
-        return self[key] as? Bool ?? false
-    }
-    
-    // Convenience method to get date values safely
-    public func getDate(_ key: String) -> Date? {
-        guard let value = self[key] else { return nil }
-        
-        if let date = value as? Date {
-            return date
-        }
-        
-        if let timestamp = value as? Double {
-            return Date(timeIntervalSince1970: timestamp / 1000) // Assuming milliseconds
-        }
-        
-        if let timestamp = value as? Int {
-            return Date(timeIntervalSince1970: Double(timestamp) / 1000) // Assuming milliseconds
-        }
-        
-        if let dateString = value as? String {
-            let formatter = ISO8601DateFormatter()
-            return formatter.date(from: dateString)
-        }
-        
-        return nil
     }
     
     // Create new instance by merging with another, incoming values win

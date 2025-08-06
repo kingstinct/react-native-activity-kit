@@ -271,6 +271,18 @@ public struct GenericDictionaryStruct: Codable, Hashable {
         
         return nil
     }
+    
+    // Create new instance by merging with another, incoming values win
+    public static func merge(previous: GenericDictionaryStruct, with incoming: [String: Any]) throws -> GenericDictionaryStruct {
+        var mergedData = previous.toDictionary()
+        
+        // Merge dictionaries, incoming values win
+        for (key, value) in incoming {
+            mergedData[key] = value
+        }
+        
+        return try GenericDictionaryStruct(data: mergedData)
+    }
 }
 
 open class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {

@@ -15,9 +15,6 @@
   "autolinking": {
     "ActivityKitModule": {
       "swift": "ActivityKitModule"
-    },
-    "ActivityProxy": {
-      "swift": "ActivityProxy"
     }
   },
   "ignorePaths": [

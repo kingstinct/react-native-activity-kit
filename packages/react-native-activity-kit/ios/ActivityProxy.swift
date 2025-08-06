@@ -110,9 +110,19 @@ class ActivityProxy : HybridActivityProxySpec {
         }
     }
     
+    private func createContentState(from state: AnyMap, mergeWithPrevious: Bool) throws -> ActivityKitModuleAttributes.ContentState {
+        let incoming = anyMapToDictionary(state)
+        
+        if mergeWithPrevious {
+            return try ActivityKitModuleAttributes.ContentState.merge(previous: activity.contentState, with: incoming)
+        } else {
+            return try ActivityKitModuleAttributes.ContentState(data: incoming)
+        }
+    }
+    
     func update(state: AnyMap, options: UpdateOptions?) throws -> Void {
         Task {
-            let contentState = try ActivityKitModuleAttributes.ContentState(data: anyMapToDictionary(state))
+            let contentState = try createContentState(from: state, mergeWithPrevious: options?.mergeWithPreviousState == true)
             
             var alertConfiguration: ActivityKit.AlertConfiguration? = nil
             if let config = options?.alertConfiguration {
@@ -155,7 +165,7 @@ class ActivityProxy : HybridActivityProxySpec {
     
     func end(state: AnyMap, options: EndOptions?) throws -> Void {
         Task {
-            let newState = try ActivityKitModuleAttributes.ContentState(data: anyMapToDictionary(state))
+            let newState = try createContentState(from: state, mergeWithPrevious: options?.mergeWithPreviousState == true)
             
             var dismissalPolicy: ActivityUIDismissalPolicy = .default
             if let policy = options?.dismissalPolicy {

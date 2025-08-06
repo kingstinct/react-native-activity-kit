@@ -43,6 +43,7 @@ export default function HomeScreen() {
               body: 'The activity has been updated successfully.',
             },
             timestamp: new Date(),
+            mergeWithPreviousState: true,
           });
           console.log('Activity updated:', activity);
         } else {

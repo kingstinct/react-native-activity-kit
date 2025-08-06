@@ -19,6 +19,7 @@ export interface UpdateOptions {
   alertConfiguration?: AlertConfiguration
   staleDate?: Date
   relevanceScore?: number
+  mergeWithPreviousState?: boolean
 }
 
 export interface EndOptions {
@@ -26,6 +27,7 @@ export interface EndOptions {
   dismissalPolicy?: Date // undefined = default, less than now = end immediately, greater than now = end at that time
   staleDate?: Date
   relevanceScore?: number
+  mergeWithPreviousState?: boolean
 }
 
 export interface ActivityStateUpdate {

@@ -1,5 +1,4 @@
-import { ActivityKit } from '@kingstinct/react-native-activity-kit' // Importing the ActivityKit module
-import { ActivityStyle } from '@kingstinct/react-native-activity-kit/lib/specs/ActivityKitModule.nitro'
+import { ActivityKit } from '@kingstinct/react-native-activity-kit' // Importing the ActivityKit module'
 import { Image } from 'expo-image'
 import * as Notifications from 'expo-notifications'
 import { useState } from 'react'
@@ -33,7 +32,6 @@ export default function HomeScreen() {
               {
                 relevanceScore: 1,
                 staleDate: new Date('2025-08-07'),
-                style: ActivityStyle.standard,
               },
             ).id,
           )

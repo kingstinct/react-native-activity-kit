@@ -4,10 +4,10 @@
     "strict": true,
     "paths": {
       "@/*": ["./*"],
-      "react-native-activity-kit": [
+      "@kingstinct/react-native-activity-kit": [
         "./packages/react-native-activity-kit/src/index.ts"
       ],
-      "react-native-activity-kit/*": [
+      "@kingstinct/react-native-activity-kit/*": [
         "./packages/react-native-activity-kit/src/*"
       ]
     }

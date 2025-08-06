@@ -26,7 +26,7 @@
     },
     "plugins": [
       "expo-router",
-      "react-native-activity-kit",
+      "@kingstinct/react-native-activity-kit",
       [
         "expo-splash-screen",
         {

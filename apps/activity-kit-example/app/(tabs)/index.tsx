@@ -1,9 +1,9 @@
+import { ActivityKit } from '@kingstinct/react-native-activity-kit' // Importing the ActivityKit module
+import { ActivityStyle } from '@kingstinct/react-native-activity-kit/lib/specs/ActivityKitModule.nitro'
 import { Image } from 'expo-image'
 import * as Notifications from 'expo-notifications'
 import { useState } from 'react'
 import { Button, Platform, StyleSheet } from 'react-native'
-import { ActivityKit } from 'react-native-activity-kit' // Importing the ActivityKit module
-import { ActivityStyle } from 'react-native-activity-kit/lib/specs/ActivityKitModule.nitro'
 import { HelloWave } from '@/components/HelloWave'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import { ThemedText } from '@/components/ThemedText'

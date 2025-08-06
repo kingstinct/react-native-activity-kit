@@ -27,10 +27,10 @@
     "noPropertyAccessFromIndexSignature": false,
     "paths": {
       "@/*": ["./apps/activity-kit-example/*"],
-      "react-native-activity-kit": [
+      "@kingstinct/react-native-activity-kit": [
         "./packages/react-native-activity-kit/src/index.ts"
       ],
-      "react-native-activity-kit/*": [
+      "@kingstinct/react-native-activity-kit/*": [
         "./packages/react-native-activity-kit/src/*"
       ]
     }

@@ -18,7 +18,7 @@ If you're using Expo, add the plugin to your `app.json` or `app.config.js`:
 {
   "expo": {
     "plugins": [
-      "react-native-activity-kit"
+      "@kingstinct/react-native-activity-kit"
     ]
   }
 }
@@ -35,7 +35,7 @@ You can configure the plugin with options:
   "expo": {
     "plugins": [
       [
-        "react-native-activity-kit",
+        "@kingstinct/react-native-activity-kit",
         {
           "NSSupportsLiveActivities": true
         }

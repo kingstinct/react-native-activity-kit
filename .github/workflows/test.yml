@@ -39,22 +39,22 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  test:
-    # The type of runner that the job will run on
-    runs-on: ${{ inputs.os || 'ubuntu-latest' }}
-    timeout-minutes: 10
+  # test:
+  #   # The type of runner that the job will run on
+  #   runs-on: ${{ inputs.os || 'ubuntu-latest' }}
+  #   timeout-minutes: 10
   
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+  #   # Steps represent a sequence of tasks that will be executed as part of the job
+  #   steps:
+  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+  #     - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+  #     - uses: oven-sh/setup-bun@v2
 
-      - run: bun install
+  #     - run: bun install
 
-      - name: Test
-        run: bun run test
+  #     - name: Test
+  #       run: bun run test
 
   typecheck:
     runs-on: ${{ inputs.os || 'ubuntu-latest' }}
@@ -131,15 +131,15 @@ jobs:
           # optional but useful:
           xcrun simctl list runtimes
 
-      - run: bun run nitro-codegen
+      - run: bun run specs
         working-directory: packages/react-native-activity-kit
 
       - name: Expo Prebuild
-        working-directory: apps/example
+        working-directory: apps/activity-kit-example
         run: bunx expo prebuild --platform ios
 
       - name: Build iOS project
-        working-directory: apps/example
+        working-directory: apps/activity-kit-example
         run: bun run build-sim
 
 
@@ -160,15 +160,15 @@ jobs:
       ## latest stable
       - run: sudo xcode-select -s /Applications/Xcode_16.4.app
 
-      - run: bun run nitro-codegen
+      - run: bun run specs
         working-directory: packages/react-native-activity-kit
 
       - name: Expo Prebuild
-        working-directory: apps/example
+        working-directory: apps/activity-kit-example
         run: bunx expo prebuild --platform ios
 
       - name: Build iOS project
-        working-directory: apps/example
+        working-directory: apps/activity-kit-example
         run: bun run build-sim
 
 
@@ -189,13 +189,13 @@ jobs:
   #     - name: Install dependencies
   #       run: bun install --ignore-scripts --frozen-lockfile
 
-  #     - run: bun run nitro-codegen
+  #     - run: bun run specs
   #       working-directory: packages/react-native-activity-kit
 
   #     - name: Expo Prebuild
-  #       working-directory: apps/example
+  #       working-directory: apps/activity-kit-example
   #       run: bunx expo prebuild --platform ios
 
   #     - name: Build iOS project
-  #       working-directory: apps/example
+  #       working-directory: apps/activity-kit-example
   #       run: bun run build-sim

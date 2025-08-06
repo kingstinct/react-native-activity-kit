@@ -11,13 +11,13 @@ This repository is a monorepo centering around the package react-native-activity
 bun install
 
 # install cocoapods (after adding any packages with native code)
-cd apps/example/ios && pod install
+cd apps/activity-kit-example/ios && pod install
 
 # After changes to any Nitro types (all in the `/packages/react-native-activity-kit/src/specs` directory and referenced from there, it's not necessary when ios/Swift files or unrelated TS-files have changed)
 bun codegen
 
 # start packager
-cd apps/example && bun start
+cd apps/activity-kit-example && bun start
 ```
 
 ## Build Verification Rule

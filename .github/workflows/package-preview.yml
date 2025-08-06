@@ -19,7 +19,7 @@ jobs:
 
       - run: bun install
 
-      - run: bun run nitro-codegen
+      - run: bun run specs
         working-directory: packages/react-native-activity-kit
 
       - run: bunx pkg-pr-new publish './packages/*'

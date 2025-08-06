@@ -8,7 +8,7 @@ struct WidgetLiveActivity: Widget {
         ActivityConfiguration(for: ActivityKitModuleAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
-              // Text("Hello \(context.state.name)")
+              Text("Hello \((context.state["name"] as? String))")
             }
             .activityBackgroundTint(Color.cyan)
             .activitySystemActionForegroundColor(Color.black)
@@ -24,7 +24,7 @@ struct WidgetLiveActivity: Widget {
                     Text("Trailing")
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    // Text("Bottom \(context.state.emoji)")
+                     Text("Bottom \(context.state["name"])")
                     // more content
                 }
             } compactLeading: {

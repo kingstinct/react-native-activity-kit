@@ -53,17 +53,17 @@ enum CodableValue: Codable, Hashable {
 
 func convertToCodableValue(_ value: Any) -> CodableValue? {
     switch value {
-    case let v as String: return .string(v)
-    case let v as Int: return .int(v)
-    case let v as Double: return .double(v)
-    case let v as Bool: return .bool(v)
+    case let stringValue as String: return .string(stringValue)
+    case let intValue as Int: return .int(intValue)
+    case let doubleValue as Double: return .double(doubleValue)
+    case let boolValue as Bool: return .bool(boolValue)
     case _ as NSNull: return .null
-    case let v as [Any]:
-        let array = v.compactMap { convertToCodableValue($0) }
+    case let arrayValue as [Any]:
+        let array = arrayValue.compactMap { convertToCodableValue($0) }
         return .array(array)
-    case let v as [String: Any]:
+    case let dictValue as [String: Any]:
         var dict: [String: CodableValue] = [:]
-        for (key, value) in v {
+        for (key, value) in dictValue {
             if let val = convertToCodableValue(value) {
                 dict[key] = val
             }
@@ -74,7 +74,32 @@ func convertToCodableValue(_ value: Any) -> CodableValue? {
     }
 }
 
-open class GenericDictionary : Codable, Hashable {
+func extractValue(from codableValue: CodableValue?) -> Any? {
+    guard let codableValue = codableValue else { return nil }
+    
+    switch codableValue {
+    case .string(let stringValue):
+        return stringValue
+    case .int(let intValue):
+        return intValue
+    case .double(let doubleValue):
+        return doubleValue
+    case .bool(let boolValue):
+        return boolValue
+    case .null:
+        return nil
+    case .array(let arrayValue):
+        return arrayValue.compactMap { extractValue(from: $0) }
+    case .dictionary(let dictValue):
+        var result: [String: Any] = [:]
+        for (key, value) in dictValue {
+            result[key] = extractValue(from: value)
+        }
+        return result
+    }
+}
+
+open class GenericDictionary: Codable, Hashable {
     var codable: CodableValue?
     
     public func hash(into hasher: inout Hasher) {
@@ -88,10 +113,9 @@ open class GenericDictionary : Codable, Hashable {
     required public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         self.codable = try container.decode(CodableValue.self)
-        
     }
     
-    public init(state: Dictionary<String, Any>) throws {
+    public init(state: [String: Any]) throws {
         self.codable = convertToCodableValue(state)
     }
 
@@ -99,9 +123,42 @@ open class GenericDictionary : Codable, Hashable {
         var container = encoder.singleValueContainer()
         try container.encode(codable)
     }
+    
+    // Dictionary-like access
+    public subscript(key: String) -> Any? {
+        get {
+            guard case let .dictionary(dict) = codable else { return nil }
+            return extractValue(from: dict[key])
+        }
+        set {
+            guard case var .dictionary(dict) = codable else { return }
+            if let newValue = newValue {
+                dict[key] = convertToCodableValue(newValue) ?? .null
+            } else {
+                dict[key] = .null
+            }
+            codable = .dictionary(dict)
+        }
+    }
+    
+    // Get all keys
+    public var keys: [String] {
+        guard case let .dictionary(dict) = codable else { return [] }
+        return Array(dict.keys)
+    }
+    
+    // Convert to regular dictionary
+    public func toDictionary() -> [String: Any] {
+        guard case let .dictionary(dict) = codable else { return [:] }
+        var result: [String: Any] = [:]
+        for (key, value) in dict {
+            result[key] = extractValue(from: value)
+        }
+        return result
+    }
 }
 
-public struct GenericDictionaryStruct : Codable, Hashable {
+public struct GenericDictionaryStruct: Codable, Hashable {
     var codable: CodableValue?
     
     public func hash(into hasher: inout Hasher) {
@@ -115,16 +172,48 @@ public struct GenericDictionaryStruct : Codable, Hashable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         self.codable = try container.decode(CodableValue.self)
-        
     }
     
-    public init(data: Dictionary<String, Any>) throws {
+    public init(data: [String: Any]) throws {
         self.codable = convertToCodableValue(data)
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(codable)
+    }
+    
+    // Dictionary-like access
+    public subscript(key: String) -> Any? {
+        get {
+            guard case let .dictionary(dict) = codable else { return nil }
+            return extractValue(from: dict[key])
+        }
+        set {
+            guard case var .dictionary(dict) = codable else { return }
+            if let newValue = newValue {
+                dict[key] = convertToCodableValue(newValue) ?? .null
+            } else {
+                dict[key] = .null
+            }
+            codable = .dictionary(dict)
+        }
+    }
+    
+    // Get all keys
+    public var keys: [String] {
+        guard case let .dictionary(dict) = codable else { return [] }
+        return Array(dict.keys)
+    }
+    
+    // Convert to regular dictionary
+    public func toDictionary() -> [String: Any] {
+        guard case let .dictionary(dict) = codable else { return [:] }
+        var result: [String: Any] = [:]
+        for (key, value) in dict {
+            result[key] = extractValue(from: value)
+        }
+        return result
     }
 }
 

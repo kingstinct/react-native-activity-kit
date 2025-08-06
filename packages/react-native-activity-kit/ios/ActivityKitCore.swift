@@ -215,6 +215,38 @@ public struct GenericDictionaryStruct: Codable, Hashable {
         }
         return result
     }
+    
+    // Convenience method to get string values safely
+    public func getString(_ key: String) -> String {
+        return self[key] as? String ?? ""
+    }
+    
+    // Convenience method to convert any value to string
+    public func getAsString(_ key: String) -> String {
+        guard let value = self[key] else { return "" }
+        
+        switch value {
+        case let stringValue as String:
+            return stringValue
+        case let intValue as Int:
+            return String(intValue)
+        case let doubleValue as Double:
+            return String(doubleValue)
+        case let boolValue as Bool:
+            return boolValue ? "true" : "false"
+        case let arrayValue as [Any]:
+            return arrayValue.map { String(describing: $0) }.joined(separator: ", ")
+        case let dictValue as [String: Any]:
+            return dictValue.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
+        default:
+            return String(describing: value)
+        }
+    }
+    
+    // Convenience method to get boolean values safely
+    public func getBool(_ key: String) -> Bool {
+        return self[key] as? Bool ?? false
+    }
 }
 
 open class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {

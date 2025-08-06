@@ -117,31 +117,8 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - NitroActivityKit (0.0.1):
-    - DoubleConversion
-    - glog
-    - hermes-engine
     - NitroModules
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-callinvoker
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
+  - NitroActivityKitCore (0.0.1)
   - NitroModules (0.27.3):
     - DoubleConversion
     - glog
@@ -2153,6 +2130,7 @@ DEPENDENCIES:
   - glog (from `../../../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../../../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - NitroActivityKit (from `../../../node_modules/react-native-activity-kit`)
+  - NitroActivityKitCore (from `../../../node_modules/react-native-activity-kit`)
   - NitroModules (from `../../../node_modules/react-native-nitro-modules`)
   - RCT-Folly (from `../../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -2291,6 +2269,8 @@ EXTERNAL SOURCES:
     :podspec: "../../../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-06-04-RNv0.79.3-7f9a871eefeb2c3852365ee80f0b6733ec12ac3b
   NitroActivityKit:
+    :path: "../../../node_modules/react-native-activity-kit"
+  NitroActivityKitCore:
     :path: "../../../node_modules/react-native-activity-kit"
   NitroModules:
     :path: "../../../node_modules/react-native-nitro-modules"
@@ -2461,7 +2441,8 @@ SPEC CHECKSUMS:
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
-  NitroActivityKit: ebd9e394f99f7334e2d07518b136b40c34b0d2ad
+  NitroActivityKit: 151ff0a53758627724910ec172e4831bc7be14fc
+  NitroActivityKitCore: da0cec26004511ea9ce265851cf85b750eb3b52b
   NitroModules: 2aa0919ad93da681e1c4235f78ce09a3a704fc9d
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: 5f638f65935e273753b1f31a365db6a8d6dc53b5
@@ -2537,6 +2518,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: adb397651e1c00672c12e9495babca70777e411e
 
-PODFILE CHECKSUM: 7c6ae1b1bcb43f085378c7dfbd51450b1a918038
+PODFILE CHECKSUM: 0bd35e4bb66435e39f96e01df93d1069861f34fd
 
 COCOAPODS: 1.16.2

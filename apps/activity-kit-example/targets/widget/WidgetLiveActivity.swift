@@ -1,14 +1,14 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
-import NitroActivityKit
+import NitroActivityKitCore
 
 struct WidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ActivityKitModuleAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
-                Text("Hello \(context.state.emoji)")
+              // Text("Hello \(context.state.name)")
             }
             .activityBackgroundTint(Color.cyan)
             .activitySystemActionForegroundColor(Color.black)
@@ -24,15 +24,15 @@ struct WidgetLiveActivity: Widget {
                     Text("Trailing")
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text("Bottom \(context.state.emoji)")
+                    // Text("Bottom \(context.state.emoji)")
                     // more content
                 }
             } compactLeading: {
                 Text("L")
             } compactTrailing: {
-                Text("T \(context.state.emoji)")
+                Text("Hello")
             } minimal: {
-                Text(context.state.emoji)
+              Text("Hello")
             }
             .widgetURL(URL(string: "https://www.expo.dev"))
             .keylineTint(Color.red)
@@ -42,17 +42,36 @@ struct WidgetLiveActivity: Widget {
 
 extension ActivityKitModuleAttributes {
     fileprivate static var preview: ActivityKitModuleAttributes {
-        WidgetAttributes(name: "World")
+      do {
+        return try ActivityKitModuleAttributes(data: Dictionary<String, Any>())
+      } catch {
+        // Fallback to empty attributes on error
+        return try! ActivityKitModuleAttributes(data: Dictionary<String, Any>())
+      }
     }
 }
 
 extension ActivityKitModuleAttributes.ContentState {
     fileprivate static var smiley: ActivityKitModuleAttributes.ContentState {
-        WidgetAttributes.ContentState(emoji: "😀")
+      do {
+        return try ActivityKitModuleAttributes.ContentState(
+          data: Dictionary<String, Any>()
+        )
+      } catch {
+        // Fallback to empty content state on error
+        return try! ActivityKitModuleAttributes.ContentState(data: Dictionary<String, Any>())
+      }
      }
      
      fileprivate static var starEyes: ActivityKitModuleAttributes.ContentState {
-         WidgetAttributes.ContentState(emoji: "🤩")
+       do {
+         return try ActivityKitModuleAttributes.ContentState(
+           data: Dictionary<String, Any>()
+         )
+       } catch {
+         // Fallback to empty content state on error
+         return try! ActivityKitModuleAttributes.ContentState(data: Dictionary<String, Any>())
+       }
      }
 }
 

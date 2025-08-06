@@ -113,9 +113,9 @@ class ActivityKitModule : HybridActivityKitModuleSpec {
                 pushType = nil
             }
             
-            let state = try ActivityKitModuleAttributes.ContentState(data: state)
+            let state = try ActivityKitModuleAttributes.ContentState(data: anyMapToDictionary(state))
             
-            let attributes = try ActivityKitModuleAttributes(data: attributes)
+            let attributes = try ActivityKitModuleAttributes(data: anyMapToDictionary(attributes))
             
             var activity: Activity<ActivityKitModuleAttributes>
             

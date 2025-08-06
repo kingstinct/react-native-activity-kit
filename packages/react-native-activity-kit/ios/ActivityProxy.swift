@@ -112,7 +112,7 @@ class ActivityProxy : HybridActivityProxySpec {
     
     func update(state: AnyMap, options: UpdateOptions?) throws -> Void {
         Task {
-            let contentState = try ActivityKitModuleAttributes.ContentState(data: state)
+            let contentState = try ActivityKitModuleAttributes.ContentState(data: anyMapToDictionary(state))
             
             var alertConfiguration: ActivityKit.AlertConfiguration? = nil
             if let config = options?.alertConfiguration {
@@ -155,7 +155,7 @@ class ActivityProxy : HybridActivityProxySpec {
     
     func end(state: AnyMap, options: EndOptions?) throws -> Void {
         Task {
-            let newState = try ActivityKitModuleAttributes.ContentState(data: state)
+            let newState = try ActivityKitModuleAttributes.ContentState(data: anyMapToDictionary(state))
             
             var dismissalPolicy: ActivityUIDismissalPolicy = .default
             if let policy = options?.dismissalPolicy {

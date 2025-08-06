@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => min_ios_version_supported, :visionos => 1.0 }
+  s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :git => "https://github.com/mrousavy/nitro.git", :tag => "#{s.version}" }
 
   s.source_files = [
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   load 'nitrogen/generated/ios/NitroActivityKit+autolinking.rb'
   add_nitrogen_files(s)
 
-  s.dependency 'React-jsi'
-  s.dependency 'React-callinvoker'
-  install_modules_dependencies(s)
+  # s.dependency 'React-jsi'
+  # s.dependency 'React-callinvoker'
+  # install_modules_dependencies(s)
 end

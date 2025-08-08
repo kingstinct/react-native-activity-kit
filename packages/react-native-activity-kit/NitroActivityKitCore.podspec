@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => min_ios_version_supported }
-  s.source       = { :git => "https://github.com/mrousavy/nitro.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/kingstinct/react-native-activity-kit.git", :tag => "#{s.version}" }
 
   # Only include the essential files for App Extensions
   s.source_files = [

@@ -1,5 +1,10 @@
 # @kingstinct/react-native-activity-kit
 
+[![Test Status](https://github.com/Kingstinct/react-native-activity-kit/actions/workflows/test.yml/badge.svg)](https://github.com/Kingstinct/react-native-activity-kit/actions/workflows/test.yml)
+[![Latest version on NPM](https://img.shields.io/npm/v/@kingstinct/react-native-activity-kit)](https://www.npmjs.com/package/@kingstinct/react-native-activity-kit)
+[![Downloads on NPM](https://img.shields.io/npm/dt/@kingstinct/react-native-activity-kit)](https://www.npmjs.com/package/@kingstinct/react-native-activity-kit)
+[![Discord](https://dcbadge.limes.pink/api/server/hrgnETpsJA?style=flat)](https://discord.gg/hrgnETpsJA)
+
 A powerful React Native library for iOS Live Activities using ActivityKit, built with Nitro Modules for optimal performance.
 
 ## 📱 Features

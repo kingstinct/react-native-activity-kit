@@ -59,6 +59,11 @@
     "react-native": "0.79.5",
     "react-native-nitro-modules": "*"
   },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  },
   "peerDependencies": {
     "expo": "*",
     "react": "*",

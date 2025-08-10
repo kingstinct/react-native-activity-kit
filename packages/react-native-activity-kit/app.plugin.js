@@ -2,7 +2,7 @@ const {
   withPlugins,
   createRunOncePlugin,
   withInfoPlist,
-} = require('@expo/config-plugins')
+} = require('expo/config-plugins')
 
 /**
  * @typedef ConfigPlugin

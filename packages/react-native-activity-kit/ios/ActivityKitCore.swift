@@ -1,5 +1,6 @@
 import ActivityKit
 import SwiftUI
+import WidgetKit
 
 // App Extension-safe implementation of ActivityKit types
 // This file can be used in App Extensions without React Native dependencies
@@ -353,5 +354,18 @@ open class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {
 
     required public init(from decoder: Decoder) throws {
         try super.init(from: decoder)
+    }
+}
+
+open class WidgetKitTimelineEntry: TimelineEntry {
+    public var data: Dictionary<String, Any>?
+    
+    public var date: Date
+    public var relevance: TimelineEntryRelevance?
+    
+    init(date: Date, relevance: TimelineEntryRelevance? = nil, data: Dictionary<String, Any>? = nil) {
+        self.date = date
+        self.relevance = relevance
+        self.data = data
     }
 }

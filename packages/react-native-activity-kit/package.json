@@ -28,9 +28,10 @@
     "README.md"
   ],
   "scripts": {
-    "postinstall": "tsc || exit 0;",
+    "postinstall": "bun run specs",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf android/build node_modules/**/android/build lib",
+    "prepublish": "bun run specs",
     "typescript": "tsc",
     "specs": "tsc && nitro-codegen --logLevel=\"debug\""
   },

@@ -1,5 +1,11 @@
 # react-native-activity-kit
 
+## 0.0.4
+
+### Patch Changes
+
+- f558ff2: fix publishing
+
 ## 0.0.3
 
 ### Patch Changes

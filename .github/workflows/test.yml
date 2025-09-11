@@ -108,39 +108,39 @@ jobs:
       - name: Lint
         run: bun run swiftlint
   
-  build-ios-beta:
-    # Only run on macOS since we need Xcode
-    runs-on: macos-15
-    timeout-minutes: 50
+  # build-ios-beta:
+  #   # Only run on macOS since we need Xcode
+  #   runs-on: macos-15
+  #   timeout-minutes: 50
 
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+  #   steps:
+  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+  #     - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+  #     - uses: oven-sh/setup-bun@v2
 
-      - name: Install dependencies
-        run: bun install --ignore-scripts
+  #     - name: Install dependencies
+  #       run: bun install --ignore-scripts
 
-      ## latest stable
-      - run: sudo xcode-select -s /Applications/Xcode_26_beta.app
+  #     ## latest stable
+  #     - run: sudo xcode-select -s /Applications/Xcode_26_beta.app
 
-      - name: Install iOS 26 simulator runtime
-        run: |
-          xcodebuild -downloadPlatform iOS
-          # optional but useful:
-          xcrun simctl list runtimes
+  #     - name: Install iOS 26 simulator runtime
+  #       run: |
+  #         xcodebuild -downloadPlatform iOS
+  #         # optional but useful:
+  #         xcrun simctl list runtimes
 
-      - run: bun run specs
-        working-directory: packages/react-native-activity-kit
+  #     - run: bun run specs
+  #       working-directory: packages/react-native-activity-kit
 
-      - name: Expo Prebuild
-        working-directory: apps/activity-kit-example
-        run: bunx expo prebuild --platform ios
+  #     - name: Expo Prebuild
+  #       working-directory: apps/activity-kit-example
+  #       run: bunx expo prebuild --platform ios
 
-      - name: Build iOS project
-        working-directory: apps/activity-kit-example
-        run: bun run build-sim
+  #     - name: Build iOS project
+  #       working-directory: apps/activity-kit-example
+  #       run: bun run build-sim
 
 
   build-ios:

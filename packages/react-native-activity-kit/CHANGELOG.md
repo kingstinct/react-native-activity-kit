@@ -1,5 +1,11 @@
 # react-native-activity-kit
 
+## 0.0.5
+
+### Patch Changes
+
+- 94e0fa6: fix release
+
 ## 0.0.4
 
 ### Patch Changes

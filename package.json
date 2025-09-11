@@ -32,5 +32,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
+  ],
+  "trustedDependencies": [
+    "@kingstinct/react-native-activity-kit",
+    "nitrogen",
+    "react-native-nitro-modules"
   ]
 }

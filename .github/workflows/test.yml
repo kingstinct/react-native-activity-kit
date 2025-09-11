@@ -67,7 +67,7 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - run: bun install --ignore-scripts --frozen-lockfile
+      - run: bun install --ignore-scripts
 
       - name: Typecheck
         run: bun run typecheck
@@ -84,7 +84,7 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - run: bun install --ignore-scripts --frozen-lockfile
+      - run: bun install --ignore-scripts
 
       - name: Lint
         run: bun run lint
@@ -101,7 +101,7 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - run: bun install --ignore-scripts --frozen-lockfile
+      - run: bun install --ignore-scripts
 
       - run: brew install swiftlint
 
@@ -120,7 +120,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: bun install --ignore-scripts --frozen-lockfile
+        run: bun install --ignore-scripts
 
       ## latest stable
       - run: sudo xcode-select -s /Applications/Xcode_26_beta.app
@@ -155,7 +155,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: bun install --ignore-scripts --frozen-lockfile
+        run: bun install --ignore-scripts
 
       ## latest stable
       - run: sudo xcode-select -s /Applications/Xcode_16.4.app
@@ -187,7 +187,7 @@ jobs:
   #     - run: sudo xcode-select -s /Applications/Xcode_16.2.app
 
   #     - name: Install dependencies
-  #       run: bun install --ignore-scripts --frozen-lockfile
+  #       run: bun install --ignore-scripts
 
   #     - run: bun run specs
   #       working-directory: packages/react-native-activity-kit

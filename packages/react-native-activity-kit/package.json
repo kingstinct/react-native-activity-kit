@@ -33,7 +33,7 @@
     "clean": "rm -rf android/build node_modules/**/android/build lib",
     "prepublish": "bun run specs",
     "typescript": "tsc",
-    "specs": "tsc && nitro-codegen --logLevel=\"debug\""
+    "specs": "tsc && bunx nitrogen --logLevel=\"debug\""
   },
   "keywords": [
     "react-native",
@@ -54,11 +54,11 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
-    "@types/react": "~19.0.10",
-    "nitro-codegen": "*",
-    "react": "19.0.0",
-    "react-native": "0.79.5",
-    "react-native-nitro-modules": "*"
+    "@types/react": "~19.1.10",
+    "nitrogen": "0.29.4",
+    "react": "19.1.0",
+    "react-native": "0.81.4",
+    "react-native-nitro-modules": "0.29.4"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -67,8 +67,8 @@
   },
   "peerDependencies": {
     "expo": "*",
-    "react": "*",
-    "react-native": "*",
-    "react-native-nitro-modules": "*"
+    "react": "19.1.1",
+    "react-native": "0.81.1",
+    "react-native-nitro-modules": "0.29.4"
   }
 }

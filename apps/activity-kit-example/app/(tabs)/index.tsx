@@ -3,6 +3,7 @@ import { Image } from 'expo-image'
 import * as Notifications from 'expo-notifications'
 import { useState } from 'react'
 import { Button, Platform, StyleSheet } from 'react-native'
+import AlarmKit from 'react-native-alarm-kit'
 import { HelloWave } from '@/components/HelloWave'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import { ThemedText } from '@/components/ThemedText'
@@ -49,6 +50,10 @@ export default function HomeScreen() {
           })
         }
         title="Push permissions"
+      ></Button>
+      <Button
+        onPress={() => AlarmKit.requestAuthorization()}
+        title="AlarmKit permissions"
       ></Button>
 
       {latestActivityId ? (

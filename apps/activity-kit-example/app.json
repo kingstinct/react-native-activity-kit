@@ -9,6 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "infoPlist": {
+        "NSAlarmKitUsageDescription": "This app uses ActivityKit to demonstrate Live Activities."
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.robertherber.activity-kit-example"
     },
@@ -40,7 +43,7 @@
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "18.0"
+            "deploymentTarget": "26.0"
           }
         }
       ],

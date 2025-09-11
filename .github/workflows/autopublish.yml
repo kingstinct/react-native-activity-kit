@@ -21,7 +21,7 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - run: HUSKY=0 bun install --ignore-scripts
+      - run: HUSKY=0 bun install
         env:
           HUSKY: 0
           

@@ -1,5 +1,6 @@
 import ActivityKit
 import SwiftUI
+import AlarmKit
 
 // App Extension-safe implementation of ActivityKit types
 // This file can be used in App Extensions without React Native dependencies
@@ -355,3 +356,78 @@ open class ActivityKitModuleAttributes: GenericDictionary, ActivityAttributes {
         try super.init(from: decoder)
     }
 }
+
+public struct GenericDictionaryAlarmStruct: AlarmMetadata, DictionaryAccessible {
+    private var _codable: CodableValue?
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(_codable?.hashValue)
+    }
+
+    public static func == (lhs: GenericDictionaryAlarmStruct, rhs: GenericDictionaryAlarmStruct) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self._codable = try container.decode(CodableValue.self)
+    }
+
+    public init(state: [String: Any]) throws {
+        self._codable = convertToCodableValue(state)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(_codable)
+    }
+
+    // Dictionary-like access
+    public subscript(key: String) -> Any? {
+        get {
+            guard case let .dictionary(dict) = _codable else { return nil }
+            return extractValue(from: dict[key])
+        }
+        set {
+            guard case var .dictionary(dict) = _codable else { return }
+            if let newValue = newValue {
+                dict[key] = convertToCodableValue(newValue) ?? .null
+            } else {
+                dict[key] = .null
+            }
+            _codable = .dictionary(dict)
+        }
+    }
+
+    // Get all keys
+    public var keys: [String] {
+        guard case let .dictionary(dict) = _codable else { return [] }
+        return Array(dict.keys)
+    }
+
+    // Convert to regular dictionary
+    public func toDictionary() -> [String: Any] {
+        guard case let .dictionary(dict) = _codable else { return [:] }
+        var result: [String: Any] = [:]
+        for (key, value) in dict {
+            result[key] = extractValue(from: value)
+        }
+        return result
+    }
+}
+
+/*
+@available(iOS 26.0, *)
+struct AlarmKitModuleAttributes: AlarmAttributes<GenericDictionaryAlarmStruct> {
+    public typealias ContentState = GenericDictionaryStruct
+
+    public init(data: [String: Any]) throws {
+        try super.init(state: data)
+    }
+
+    required public init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
+}
+
+*/

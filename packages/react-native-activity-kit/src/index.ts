@@ -5,3 +5,5 @@ import type { ActivityKitModule } from './specs/ActivityKitModule.nitro'
 
 export const ActivityKit =
   NitroModules.createHybridObject<ActivityKitModule>('ActivityKitModule')
+
+export { default as AlarmKit } from './AlarmKit'

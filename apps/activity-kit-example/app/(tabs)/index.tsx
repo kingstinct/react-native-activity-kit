@@ -1,9 +1,8 @@
-import { ActivityKit } from '@kingstinct/react-native-activity-kit' // Importing the ActivityKit module'
+import { ActivityKit, AlarmKit } from '@kingstinct/react-native-activity-kit' // Importing the ActivityKit module'
 import { Image } from 'expo-image'
 import * as Notifications from 'expo-notifications'
 import { useState } from 'react'
 import { Button, Platform, StyleSheet } from 'react-native'
-import AlarmKit from 'react-native-alarm-kit'
 import { HelloWave } from '@/components/HelloWave'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import { ThemedText } from '@/components/ThemedText'
@@ -54,6 +53,17 @@ export default function HomeScreen() {
       <Button
         onPress={() => AlarmKit.requestAuthorization()}
         title="AlarmKit permissions"
+      ></Button>
+
+      <Button
+        onPress={() =>
+          AlarmKit.createCountdown(
+            'Test Countdown',
+            'sdfsdf',
+            'Countdown Title',
+          )
+        }
+        title="Start countdown"
       ></Button>
 
       {latestActivityId ? (

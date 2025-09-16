@@ -88,14 +88,13 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
 
         let presentation = AlarmPresentation(
             alert: alertContent,
-            // countdown: countdownContent,
-            // paused: pausedContent
+            countdown: countdownContent,
+            paused: pausedContent
         )
-        // presentation.alert.secondaryButtonBehavior = .none
 
         let id = UUID()
 
-        let countdownDuration: Double = TimeInterval(floatLiteral: 60)
+        let countdownDuration: Double = TimeInterval(floatLiteral: 10)
 
         let attributes = AlarmAttributes<GenericDictionaryAlarmStruct>.init(
             presentation: presentation,
@@ -104,11 +103,11 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
         )
 
         let alarmConfiguration = AlarmManager.AlarmConfiguration(
-            /*countdownDuration: Alarm.CountdownDuration.init(
+            countdownDuration: Alarm.CountdownDuration.init(
                 preAlert: countdownDuration,
                 postAlert: countdownDuration
-            ),*/
-            schedule: Alarm.Schedule.fixed(Date.now.addingTimeInterval(countdownDuration)),
+            ),
+            // schedule: Alarm.Schedule.fixed(Date.now.addingTimeInterval(countdownDuration)),
             attributes: attributes,
             // stopIntent: Intent.unspecified (alarmID: id),
             // secondaryIntent: secondaryIntent(alarmID: id, userInput: userInput)

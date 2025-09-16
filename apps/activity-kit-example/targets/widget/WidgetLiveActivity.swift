@@ -9,13 +9,14 @@ struct WidgetLiveActivityAlarm: Widget {
 
   var body: some WidgetConfiguration {
 
-        ActivityConfiguration(for: AlarmAttributes<GenericDictionaryAlarmStruct>.self) { context in
-          VStack {
-            Text("AlarmId: \(context.state.alarmID.uuidString)")
-            /*Text(AlarmManager.shared.ala ?? Date(), style: .timer)*/
-          }
-          .activityBackgroundTint(Color.cyan)
-          .activitySystemActionForegroundColor(Color.black)
+        ActivityConfiguration(
+          for: AlarmAttributes<GenericDictionaryAlarmStruct>.self) { context in
+            VStack {
+              Text("AlarmId: \(context.state.alarmID.uuidString)")
+              /*Text(AlarmManager.shared.ala ?? Date(), style: .timer)*/
+            }
+            .activityBackgroundTint(Color.cyan)
+            .activitySystemActionForegroundColor(Color.black)
 
         } dynamicIsland: { context in
           DynamicIsland {

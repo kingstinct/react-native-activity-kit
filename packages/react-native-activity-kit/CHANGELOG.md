@@ -1,5 +1,11 @@
 # react-native-activity-kit
 
+## 0.0.6
+
+### Patch Changes
+
+- 2ef0176: Add alertkit
+
 ## 0.0.5
 
 ### Patch Changes

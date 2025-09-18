@@ -1,5 +1,4 @@
 import { ActivityKit, AlarmKit } from '@kingstinct/react-native-activity-kit' // Importing the ActivityKit module'
-import { SecondaryButtonBehavior } from '@kingstinct/react-native-activity-kit/lib/specs/AlarmKit.nitro'
 import { Image } from 'expo-image'
 import * as Notifications from 'expo-notifications'
 import { useState } from 'react'

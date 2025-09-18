@@ -1,5 +1,5 @@
 import type { AnyMap, HybridObject } from 'react-native-nitro-modules'
-import type { Alarm } from './Alarm.nitro'
+import type { AlarmProxy } from './AlarmProxy.nitro'
 
 export interface AlarmSound {
   name: string
@@ -76,7 +76,7 @@ export interface AlarmButtonProps {
   systemImageName: string
 }
 
-enum SecondaryButtonBehavior {
+export enum SecondaryButtonBehavior {
   countdown = 'countdown',
   custom = 'custom',
   none = 'none',
@@ -135,9 +135,9 @@ export interface AlarmKitModule extends HybridObject<{ ios: 'swift' }> {
 
   authorizationUpdates(callback: (status: AuthStatus) => void): void
 
-  alarmUpdates(callback: (alarms: Alarm[]) => void): void
-  alarms(): Alarm[]
+  alarmUpdates(callback: (alarms: AlarmProxy[]) => void): void
+  alarms(): AlarmProxy[]
 
-  createCountdown(props: CountdownProps): Promise<Alarm>
-  createAlarm(props: AlarmProps): Promise<Alarm>
+  createCountdown(props: CountdownProps): Promise<AlarmProxy>
+  createAlarm(props: AlarmProps): Promise<AlarmProxy>
 }

@@ -3,7 +3,30 @@ import SwiftUI
 import NitroModules
 
 func createColor(_ color: RGBColor) -> Color {
-    return Color.init(red: color.red, green: color.green, blue: color.blue)
+    if let alpha = color.alpha {
+        return Color.init(
+            red: color.red * 255,
+            green: color.green * 255,
+            blue: color.blue * 255,
+            opacity: alpha
+        )
+    }
+    return Color.init(
+        red: color.red * 255,
+        green: color.green * 255,
+        blue: color.blue * 255
+    )
+}
+
+func createPausedPresentation(_ paused: PausedPresentation?) -> AlarmPresentation.Paused? {
+    if let paused = paused {
+        return AlarmPresentation.Paused(
+            title: LocalizedStringResource(stringLiteral: paused.title),
+            resumeButton: createAlarmButton(paused.resumeButton),
+        )
+    }
+
+    return nil
 }
 
 @available(iOS 26.0, *)
@@ -24,27 +47,75 @@ func createAlarmButton(_ props: AlarmButtonProps) -> AlarmButton {
     )
 }
 
+func createSecondButtonBehavior(_ behavior: SecondaryButtonBehavior?) -> AlarmPresentation.Alert.SecondaryButtonBehavior? {
+    if let behavior = behavior {
+
+        switch behavior {
+        case .countdown:
+            return .countdown
+        case .custom:
+            return .custom
+        case .none:
+            return .none
+        }
+    }
+    return nil
+}
+
+func createAlertPresentation(_ alertPresentation: AlertPresentation) -> AlarmPresentation.Alert {
+    let alertContent = AlarmPresentation.Alert(
+        title: LocalizedStringResource(stringLiteral: alertPresentation.title),
+        stopButton: createAlarmButton(alertPresentation.stopButton),
+        secondaryButton: createAlarmButtonNullable(alertPresentation.secondaryButton),
+        secondaryButtonBehavior: createSecondButtonBehavior(alertPresentation.secondaryButtonBehavior)
+    )
+
+    return alertContent
+}
+
+func scheduleAlarm(alarmConfiguration: AlarmManager.AlarmConfiguration<GenericDictionaryAlarmStruct>) -> Promise<any HybridAlarmProxySpec> {
+    return Promise.async {
+        try await withCheckedThrowingContinuation { continuation in
+            Task {
+                do {
+                    let id = UUID()
+                    let alarm = try await AlarmManager.shared.schedule(
+                        id: id,
+                        configuration: alarmConfiguration
+                    )
+                    let alarmModule = AlarmModule(alarm: alarm)
+
+                    continuation.resume(returning: alarmModule)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+}
+
+func createAttributes(presentation: AlarmPresentation, metadata: AnyMap, tintColor: RGBColor) -> AlarmAttributes<GenericDictionaryAlarmStruct> {
+
+    let attributes = AlarmAttributes<GenericDictionaryAlarmStruct>.init(
+        presentation: presentation,
+        metadata: try? GenericDictionaryAlarmStruct(state: anyMapToDictionary(metadata)),
+        tintColor: createColor(tintColor)
+    )
+
+    return attributes
+}
+
 @available(iOS 26.0, *)
 class AlarmKitModule: HybridAlarmKitModuleSpec {
-    func createCountdown(props: CountdownProps) throws -> NitroModules.Promise<any HybridAlarmSpec> {
-        let alertContent = AlarmPresentation.Alert(
-            title: LocalizedStringResource(stringLiteral: props.alert.title),
-            stopButton: createAlarmButton(props.alert.stopButton),
-        )
+    func createCountdown(props: CountdownProps) throws -> Promise<any HybridAlarmProxySpec> {
+        let alertContent = createAlertPresentation(props.alert)
 
         let countdownContent = AlarmPresentation.Countdown(
             title: LocalizedStringResource(stringLiteral: props.countdown.title),
             pauseButton: createAlarmButtonNullable(props.countdown.pauseButton),
         )
 
-        var pausedPresentation: AlarmPresentation.Paused?
-
-        if let paused = props.paused {
-            pausedPresentation = AlarmPresentation.Paused(
-                title: "Paused",
-                resumeButton: createAlarmButton(paused.resumeButton),
-            )
-        }
+        let pausedPresentation = createPausedPresentation(props.paused)
 
         let presentation = AlarmPresentation(
             alert: alertContent,
@@ -52,16 +123,14 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
             paused: pausedPresentation
         )
 
-        let id = UUID()
+        let attributes = createAttributes(
+            presentation: presentation,
+            metadata: props.metadata,
+            tintColor: props.tintColor
+        )
 
         let preAlert = TimeInterval(floatLiteral: props.preAlert)
         let postAlert = props.postAlert != nil ? TimeInterval(floatLiteral: props.postAlert!) : nil
-
-        let attributes = AlarmAttributes<GenericDictionaryAlarmStruct>.init(
-            presentation: presentation,
-            metadata: try? GenericDictionaryAlarmStruct(state: anyMapToDictionary(props.metadata)),
-            tintColor: createColor(props.tintColor)
-        )
 
         let alarmConfiguration = AlarmManager.AlarmConfiguration(
             countdownDuration: Alarm.CountdownDuration.init(
@@ -70,55 +139,29 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
             ),
             // schedule: Alarm.Schedule.fixed(Date.now.addingTimeInterval(countdownDuration)),
             attributes: attributes,
+
             // stopIntent: Intent.unspecified (alarmID: id),
             // secondaryIntent: secondaryIntent(alarmID: id, userInput: userInput)
             sound: props.sound != nil ? .named(props.sound!) : .default
         )
 
-        return Promise.async {
-            try await withCheckedThrowingContinuation { continuation in
-                Task {
-                    do {
-                        let alarm = try await AlarmManager.shared.schedule(
-                            id: id,
-                            configuration: alarmConfiguration
-                        )
-                        let alarmModule = AlarmModule(alarm: alarm)
-                        continuation.resume(returning: alarmModule)
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
-        }
+        return scheduleAlarm(alarmConfiguration: alarmConfiguration)
     }
 
-    func createAlarm(props: AlarmProps) throws -> NitroModules.Promise<any HybridAlarmSpec> {
-        let alertContent = AlarmPresentation.Alert(
-            title: LocalizedStringResource(stringLiteral: props.alert.title),
-            stopButton: createAlarmButton(props.alert.stopButton),
-        )
+    func createAlarm(props: AlarmProps) throws -> NitroModules.Promise<any HybridAlarmProxySpec> {
+        let alertContent = createAlertPresentation(props.alert)
 
-        var pausedPresentation: AlarmPresentation.Paused?
-
-        if let paused = props.paused {
-            pausedPresentation = AlarmPresentation.Paused(
-                title: "Paused",
-                resumeButton: createAlarmButton(paused.resumeButton),
-            )
-        }
+        let pausedPresentation = createPausedPresentation(props.paused)
 
         let presentation = AlarmPresentation(
             alert: alertContent,
             paused: pausedPresentation
         )
 
-        let id = UUID()
-
-        let attributes = AlarmAttributes<GenericDictionaryAlarmStruct>.init(
+        let attributes = createAttributes(
             presentation: presentation,
-            metadata: try? GenericDictionaryAlarmStruct(state: anyMapToDictionary(props.metadata)),
-            tintColor: createColor(props.tintColor)
+            metadata: props.metadata,
+            tintColor: props.tintColor
         )
 
         let alarmConfiguration = AlarmManager.AlarmConfiguration(
@@ -129,22 +172,7 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
             sound: props.sound != nil ? .named(props.sound!) : .default
         )
 
-        return Promise.async {
-            try await withCheckedThrowingContinuation { continuation in
-                Task {
-                    do {
-                        let alarm = try await AlarmManager.shared.schedule(
-                            id: id,
-                            configuration: alarmConfiguration
-                        )
-                        let alarmModule = AlarmModule(alarm: alarm)
-                        continuation.resume(returning: alarmModule)
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
-        }
+        return scheduleAlarm(alarmConfiguration: alarmConfiguration)
     }
 
     func requestAuthorization() throws -> NitroModules.Promise<AuthStatus> {
@@ -171,7 +199,7 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
         }
     }
 
-    func alarmUpdates(callback: @escaping ([any HybridAlarmSpec]) -> Void) throws {
+    func alarmUpdates(callback: @escaping ([any HybridAlarmProxySpec]) -> Void) throws {
         Task {
             for await alarms in AlarmManager.shared.alarmUpdates {
                 callback(alarms.map { alarm in
@@ -181,7 +209,7 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
         }
     }
 
-    func alarms() throws -> [any HybridAlarmSpec] {
+    func alarms() throws -> [any HybridAlarmProxySpec] {
         return try AlarmManager.shared.alarms.map { alarm in
             return AlarmModule(alarm: alarm)
         }

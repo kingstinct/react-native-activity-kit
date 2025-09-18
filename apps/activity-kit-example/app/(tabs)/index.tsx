@@ -1,4 +1,5 @@
 import { ActivityKit, AlarmKit } from '@kingstinct/react-native-activity-kit' // Importing the ActivityKit module'
+import { SecondaryButtonBehavior } from '@kingstinct/react-native-activity-kit/lib/specs/AlarmKit.nitro'
 import { Image } from 'expo-image'
 import * as Notifications from 'expo-notifications'
 import { useState } from 'react'
@@ -57,7 +58,25 @@ export default function HomeScreen() {
 
       <Button
         onPress={() => {
-          AlarmKit.createCountdown('Test Countdown', 'Done', 'Countdown Title')
+          const countdownDurationInSeconds = 10
+          AlarmKit.createCountdown({
+            tintColor: { red: 255, green: 0, blue: 0, alpha: 0.5 },
+            alert: {
+              title: 'Pomodoro focus time over!',
+              stopButton: {
+                text: 'Ok, cool!',
+                systemImageName: 'stop.fill',
+                textColor: { red: 0, green: 255, blue: 0 },
+              },
+            },
+            countdown: {
+              title: 'Pomodoro focus time!',
+            },
+            preAlert: countdownDurationInSeconds,
+            metadata: {
+              timerFiringAt: Date.now() + countdownDurationInSeconds * 1000,
+            },
+          })
         }}
         title="Start countdown"
       ></Button>

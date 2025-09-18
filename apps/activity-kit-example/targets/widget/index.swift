@@ -3,10 +3,21 @@ import SwiftUI
 
 @main
 struct exportWidgets: WidgetBundle {
-    var body: some Widget {
-        // Export widgets here
-        widget()
-        widgetControl()
-        WidgetLiveActivity()
-    }
+      @WidgetBundleBuilder
+      var body: some Widget {
+          widgets()
+      }
+
+      private func widgets() -> some Widget {
+          if #available(iOS 26, *) {
+              return WidgetBundleBuilder.buildBlock( widget(),
+                                                     // widgetControl(),
+                                                     WidgetLiveActivity(),
+                                                   WidgetLiveActivityAlarm())
+          } else {
+              return WidgetBundleBuilder.buildBlock( widget(),
+                                                     // widgetControl(),
+                                                     WidgetLiveActivity())
+          }
+      }
 }

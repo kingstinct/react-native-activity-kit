@@ -4,7 +4,7 @@
   "scripts": {
     "changeset-release": "cp README.md packages/react-native-activity-kit && bunx changeset publish",
     "clean:node_modules": "rm -rf node_modules/ && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
-    "codegen": "cd packages/react-native-activity-kit && bun run specs && cd ../../apps/activity-kit-example/ios && pod install",
+    "codegen": "bun run --filter './packages/*' specs && cd apps/activity-kit-example/ios && pod install",
     "create-changeset": "bunx changeset",
     "lint-fix": "bunx @biomejs/biome check --fix",
     "lint": "bunx @biomejs/biome check",

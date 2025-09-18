@@ -9,7 +9,11 @@
       ],
       "@kingstinct/react-native-activity-kit/*": [
         "./packages/react-native-activity-kit/src/*"
-      ]
+      ],
+      "react-native-alarm-kit": [
+        "./packages/react-native-alarm-kit/src/index.ts"
+      ],
+      "react-native-alarm-kit/*": ["./packages/react-native-alarm-kit/src/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]

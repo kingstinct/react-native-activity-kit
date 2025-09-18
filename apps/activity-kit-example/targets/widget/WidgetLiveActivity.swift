@@ -1,32 +1,62 @@
 import ActivityKit
+import AlarmKit
 import WidgetKit
 import SwiftUI
 import NitroActivityKitCore
 
 struct WidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: ActivityKitModuleAttributes.self) { context in
-            // Lock screen/banner UI goes here
-            VStack {
-              Text("Hello \(context.state.getAsString("name"))")
-              Text(context.state.getDate("startedTimerAt") ?? Date(), style: .timer)
+      ActivityConfiguration(for: ActivityKitModuleAttributes.self) { context in
+            // Changed VStack to mimic built-in timer style
+            ZStack {
+              RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(.ultraThinMaterial)
+
+              HStack(spacing: 8) {
+                Text("Timer")
+                  .font(.subheadline.weight(.medium))
+                  .foregroundColor(.secondary)
+
+                Text(context.state.getDate("startedTimerAt") ?? Date(), style: .timer)
+                  .font(.system(size: 36, weight: .medium, design: .monospaced))
+                  .foregroundColor(.orange)
+                  .minimumScaleFactor(0.5)
+                  .lineLimit(1)
+              }
+              .padding()
+              .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .activityBackgroundTint(Color.cyan)
-            .activitySystemActionForegroundColor(Color.black)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .padding(16)
+            .activityBackgroundTint(Color.black.opacity(0.1))
+            .containerBackground(.ultraThinMaterial, for: .widget)
+            // .activitySystemActionForegroundColor(Color.black)
 
         } dynamicIsland: { context in
             DynamicIsland {
-                // Expanded UI goes here.  Compose the expanded UI through
-                // various regions, like leading/trailing/center/bottom
-                DynamicIslandExpandedRegion(.leading) {
-                    Text("Leading")
-                }
-                DynamicIslandExpandedRegion(.trailing) {
-                    Text("Trailing")
-                }
-                DynamicIslandExpandedRegion(.bottom) {
-                     Text("Bottom \(context.state.getString("name"))")
-                    // more content
+                DynamicIslandExpandedRegion(.leading) { Text("Leading") }
+                DynamicIslandExpandedRegion(.trailing) { Text("Trailing") }
+                DynamicIslandExpandedRegion(.center) {
+                  ZStack {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                      .fill(.ultraThinMaterial)
+
+                    HStack(spacing: 8) {
+                      Text("Timer")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(.secondary)
+
+                      Text(context.state.getDate("startedTimerAt") ?? Date(), style: .timer)
+                        .font(.system(size: 36, weight: .medium, design: .monospaced))
+                        .foregroundColor(.orange)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                  }
+                  .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                  .padding(16)
                 }
             } compactLeading: {
                 Text("L")

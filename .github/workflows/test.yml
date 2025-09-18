@@ -145,7 +145,7 @@ jobs:
 
   build-ios:
     # Only run on macOS since we need Xcode
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 50
 
     steps:

@@ -56,13 +56,9 @@ export default function HomeScreen() {
       ></Button>
 
       <Button
-        onPress={() =>
-          AlarmKit.createCountdown(
-            'Test Countdown',
-            'sdfsdf',
-            'Countdown Title',
-          )
-        }
+        onPress={() => {
+          AlarmKit.createCountdown('Test Countdown', 'Done', 'Countdown Title')
+        }}
         title="Start countdown"
       ></Button>
 

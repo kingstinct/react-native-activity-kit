@@ -77,12 +77,26 @@ class AlarmKit {
     alertTitle: string,
     stopText: string,
     countdownTitle: string,
+    countdownDurationInSeconds: number = 60,
   ): Promise<Alarm> {
-    return this.hybridObject.createCountdown(
-      alertTitle,
-      stopText,
-      countdownTitle,
-    )
+    return this.hybridObject.createCountdown({
+      tintColor: { red: 0, green: 0.478, blue: 1, alpha: 1 },
+      alert: {
+        title: alertTitle,
+        stopButton: {
+          text: stopText,
+          systemImageName: 'stop.fill',
+          textColor: { red: 1, green: 1, blue: 1, alpha: 1 },
+        },
+      },
+      countdown: {
+        title: countdownTitle,
+      },
+      preAlert: countdownDurationInSeconds,
+      metadata: {
+        timerFiringAt: Date.now() + countdownDurationInSeconds * 1000,
+      },
+    })
   }
 
   /*async getPermissionStatus(): Promise<AlarmPermissionStatus> {

@@ -1,4 +1,4 @@
-import type { HybridObject } from 'react-native-nitro-modules'
+import type { AnyMap, HybridObject } from 'react-native-nitro-modules'
 import type { Alarm } from './Alarm.nitro'
 
 export interface AlarmSound {
@@ -63,6 +63,71 @@ export interface AlarmPermissionStatus {
   status: AuthStatus
 }
 
+export interface RGBColor {
+  red: number // 0-255
+  green: number // 0-255
+  blue: number // 0-255
+  alpha?: number // 0-1, default 1
+}
+
+export interface AlarmButtonProps {
+  text: string
+  textColor: RGBColor
+  systemImageName: string
+}
+
+enum SecondaryButtonBehavior {
+  countdown = 'countdown',
+  custom = 'custom',
+  none = 'none',
+}
+
+export interface AlertPresentation {
+  title: string
+  stopButton: AlarmButtonProps
+  secondaryButton?: AlarmButtonProps
+  secondaryButtonBehavior?: SecondaryButtonBehavior // default 'none'
+}
+
+export interface CountdownPresentation {
+  title: string
+  pauseButton?: AlarmButtonProps
+}
+
+export interface PausedPresentation {
+  title: string
+  resumeButton: AlarmButtonProps
+}
+
+export interface CountdownProps {
+  alert: AlertPresentation
+  countdown: CountdownPresentation
+  paused?: PausedPresentation
+
+  tintColor: RGBColor
+
+  sound?: string
+
+  metadata: AnyMap
+
+  preAlert: number // in seconds
+  postAlert?: number // in seconds
+}
+
+export interface AlarmProps {
+  alert: AlertPresentation
+  paused?: PausedPresentation
+
+  tintColor: RGBColor
+
+  sound?: string
+
+  metadata: AnyMap
+
+  // let's just support exact time for now
+  scheduledDate: Date // timestamp in milliseconds
+}
+
 export interface AlarmKitModule extends HybridObject<{ ios: 'swift' }> {
   // Permission methods
   requestAuthorization(): Promise<AuthStatus>
@@ -73,9 +138,6 @@ export interface AlarmKitModule extends HybridObject<{ ios: 'swift' }> {
   alarmUpdates(callback: (alarms: Alarm[]) => void): void
   alarms(): Alarm[]
 
-  createCountdown(
-    alertTitle: string,
-    stopText: string,
-    countdownTitle: string,
-  ): Promise<Alarm>
+  createCountdown(props: CountdownProps): Promise<Alarm>
+  createAlarm(props: AlarmProps): Promise<Alarm>
 }

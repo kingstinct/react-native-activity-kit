@@ -5,16 +5,16 @@ import NitroModules
 func createColor(_ color: RGBColor) -> Color {
     if let alpha = color.alpha {
         return Color.init(
-            red: color.red * 255,
-            green: color.green * 255,
-            blue: color.blue * 255,
+            red: color.red / 255,
+            green: color.green / 255,
+            blue: color.blue / 255,
             opacity: alpha
         )
     }
     return Color.init(
-        red: color.red * 255,
-        green: color.green * 255,
-        blue: color.blue * 255
+        red: color.red / 255,
+        green: color.green / 255,
+        blue: color.blue / 255
     )
 }
 

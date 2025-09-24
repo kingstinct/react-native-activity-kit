@@ -115,22 +115,6 @@ public extension DictionaryAccessible {
             }
         }
 
-        if let rgbColor = value as? RGBColor {
-            if let alpha = rgbColor.alpha {
-                return Color(
-                    red: rgbColor.red * 255,
-                    green: rgbColor.green * 255,
-                    blue: rgbColor.blue * 255,
-                    opacity: alpha
-                )
-            }
-            return Color(
-                red: rgbColor.red * 255,
-                green: rgbColor.green * 255,
-                blue: rgbColor.blue * 255
-            )
-        }
-
         return nil
     }
 }

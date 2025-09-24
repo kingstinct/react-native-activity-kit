@@ -148,7 +148,7 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
         return scheduleAlarm(alarmConfiguration: alarmConfiguration)
     }
 
-    func createAlarm(props: AlarmProps) throws -> NitroModules.Promise<any HybridAlarmProxySpec> {
+    func createAlarm(props: AlarmProps) throws -> Promise<any HybridAlarmProxySpec> {
         let alertContent = createAlertPresentation(props.alert)
 
         let pausedPresentation = createPausedPresentation(props.paused)
@@ -175,7 +175,7 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
         return scheduleAlarm(alarmConfiguration: alarmConfiguration)
     }
 
-    func requestAuthorization() throws -> NitroModules.Promise<AuthStatus> {
+    func requestAuthorization() throws -> Promise<AuthStatus> {
         return Promise.async {
             try await withCheckedThrowingContinuation { continuation in
                 Task {

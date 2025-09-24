@@ -1,5 +1,11 @@
 # react-native-activity-kit
 
+## 0.0.7
+
+### Patch Changes
+
+- c382ed2: fix archiving issue
+
 ## 0.0.6
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@kingstinct/react-native-activity-kit",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "@kingstinct/react-native-activity-kit",
   "main": "lib/index",
   "module": "lib/index",

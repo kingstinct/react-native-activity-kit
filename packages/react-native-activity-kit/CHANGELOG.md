@@ -1,5 +1,11 @@
 # react-native-activity-kit
 
+## 0.0.9
+
+### Patch Changes
+
+- 3c72e64: fix color conversion
+
 ## 0.0.8
 
 ### Patch Changes

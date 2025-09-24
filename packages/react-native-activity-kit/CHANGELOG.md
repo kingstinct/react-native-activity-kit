@@ -1,5 +1,11 @@
 # react-native-activity-kit
 
+## 0.0.8
+
+### Patch Changes
+
+- eec0382: remove rgbcolors again
+
 ## 0.0.7
 
 ### Patch Changes

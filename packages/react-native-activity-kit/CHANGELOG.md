@@ -1,5 +1,11 @@
 # react-native-activity-kit
 
+## 0.0.10
+
+### Patch Changes
+
+- 259c88e: fix peer deps
+
 ## 0.0.9
 
 ### Patch Changes

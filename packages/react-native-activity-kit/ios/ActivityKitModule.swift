@@ -112,9 +112,14 @@ class ActivityKitModule: HybridActivityKitModuleSpec {
                 pushType = nil
             }
 
+            let attributeDict = anyMapToDictionary(attributes)
+            let scheduledStartTimestamp = attributeDict["_startDate"] as? Double
+            let scheduledAlertTitle = attributeDict["_alertTitle"] as? String
+            let scheduledAlertBody = attributeDict["_alertBody"] as? String
+
             let state = try ActivityKitModuleAttributes.ContentState(data: anyMapToDictionary(state))
 
-            let attributes = try ActivityKitModuleAttributes(data: anyMapToDictionary(attributes))
+            let attributes = try ActivityKitModuleAttributes(data: attributeDict)
 
             var activity: Activity<ActivityKitModuleAttributes>
 
@@ -125,7 +130,22 @@ class ActivityKitModule: HybridActivityKitModuleSpec {
                     relevanceScore: options?.relevanceScore ?? 0,
                 )
 
-                if #available(iOS 18.0, *) {
+                if let startTimestamp = scheduledStartTimestamp {
+                    let startDate = Date(timeIntervalSince1970: startTimestamp / 1000)
+                    let alertConfig = ActivityKit.AlertConfiguration(
+                        title: LocalizedStringResource(stringLiteral: scheduledAlertTitle ?? "Live Activity Started"),
+                        body: LocalizedStringResource(stringLiteral: scheduledAlertBody ?? "Tap to open"),
+                        sound: .default
+                    )
+                    activity = try Activity.request(
+                        attributes: attributes,
+                        content: content,
+                        pushType: pushType,
+                        style: options?.style == .transient ? .transient : .standard,
+                        alertConfiguration: alertConfig,
+                        startDate: startDate
+                    )
+                } else if #available(iOS 18.0, *) {
                     activity = try Activity.request(
                         attributes: attributes,
                         content: content,

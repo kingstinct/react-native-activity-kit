@@ -137,14 +137,25 @@ class ActivityKitModule: HybridActivityKitModuleSpec {
                         body: LocalizedStringResource(stringLiteral: scheduledAlertBody ?? "Tap to open"),
                         sound: .default
                     )
-                    activity = try Activity.request(
-                        attributes: attributes,
-                        content: content,
-                        pushType: pushType,
-                        style: options?.style == .transient ? .transient : .standard,
-                        alertConfiguration: alertConfig,
-                        startDate: startDate
-                    )
+                    if #available(iOS 26.0, *) {
+                        activity = try Activity.request(
+                            attributes: attributes,
+                            content: content,
+                            pushType: pushType,
+                            style: options?.style == .transient ? .transient : .standard,
+                            alertConfiguration: alertConfig,
+                            start: startDate
+                        )
+                    } else {
+                        activity = try Activity.request(
+                            attributes: attributes,
+                            content: content,
+                            pushType: pushType,
+                            style: options?.style == .transient ? .transient : .standard,
+                            alertConfiguration: alertConfig,
+                            startDate: startDate
+                        )
+                    }
                 } else if #available(iOS 18.0, *) {
                     activity = try Activity.request(
                         attributes: attributes,

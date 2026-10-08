@@ -1,6 +1,6 @@
 {
   "name": "@kingstinct/react-native-activity-kit",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "@kingstinct/react-native-activity-kit",
   "main": "lib/index",
   "module": "lib/index",
@@ -55,10 +55,10 @@
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/react": "~19.1.10",
-    "nitrogen": "0.29.4",
+    "nitrogen": "0.37.1",
     "react": "19.1.0",
     "react-native": "0.81.4",
-    "react-native-nitro-modules": "0.29.4"
+    "react-native-nitro-modules": "0.37.1"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -69,6 +69,6 @@
     "expo": "*",
     "react": ">=19.1.0",
     "react-native": ">=0.81",
-    "react-native-nitro-modules": ">=0.29.4"
+    "react-native-nitro-modules": ">=0.33.8"
   }
 }

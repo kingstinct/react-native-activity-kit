@@ -148,11 +148,11 @@ class ActivityKitModule: HybridActivityKitModuleSpec {
         }
     }
 
-        func getActivityById(activityId: String) throws -> HybridActivityProxySpec? {
+        func getActivityById(activityId: String) throws -> Variant__any_HybridActivityProxySpec__NullType? {
             if #available(iOS 16.1, *) {
                 let activity = Activity<ActivityKitModuleAttributes>.activities.first(where: { $0.id == activityId })
                 if let activity = activity {
-                    return ActivityProxy(activity: activity)
+                    return .first(ActivityProxy(activity: activity))
                 }
             } else {
                 // Fallback on earlier versions

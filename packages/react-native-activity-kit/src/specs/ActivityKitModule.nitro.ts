@@ -43,6 +43,6 @@ export interface ActivityKitModule extends HybridObject<{ ios: 'swift' }> {
     state: AnyMap,
     options?: StartActivityOptions,
   ): ActivityProxy
-  getActivityById(activityId: string): ActivityProxy | null | undefined
+  getActivityById(activityId: string): ActivityProxy | undefined
   getAllActivities(): ActivityProxy[]
 }

@@ -28,7 +28,8 @@ func convertAlarmState(_ status: Alarm.State) -> AlarmState {
     case .scheduled:
         return .scheduled
     @unknown default:
-        fatalError("unknown alarm state")
+        // A state added by a newer iOS must not crash the app; treat it as scheduled.
+        return .scheduled
     }
 }
 
@@ -48,8 +49,8 @@ func getAnyMapValue(_ anyMap: AnyMap, key: String) -> Any? {
     if anyMap.isString(key: key) {
         return anyMap.getString(key: key)
     }
-    if anyMap.isBigInt(key: key) {
-        return anyMap.getBigInt(key: key)
+    if anyMap.isInt64(key: key) {
+        return anyMap.getInt64(key: key)
     }
     if anyMap.isNull(key: key) {
         return nil
@@ -82,7 +83,7 @@ func serializeAnyMap(_ metadata: [String: Any]?) -> AnyMap {
             }
 
             if let integer = item.value as? Int64 {
-                serialized.setBigInt(key: item.key, value: integer)
+                serialized.setInt64(key: item.key, value: integer)
             }
 
             if let dict = item.value as? [String: AnyValue] {

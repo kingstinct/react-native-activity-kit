@@ -1,5 +1,5 @@
 import type { AnyMap, HybridObject } from 'react-native-nitro-modules'
-import type { AlarmProxy } from './AlarmProxy.nitro'
+import { type AlarmProxy, AlarmState } from './AlarmProxy.nitro'
 
 export interface AlarmSound {
   name: string
@@ -7,18 +7,13 @@ export interface AlarmSound {
   useSystemDefault?: boolean
 }
 
+export { AlarmState }
+
 export enum AlarmPriority {
   Low = 'low',
   Normal = 'normal',
   High = 'high',
   Critical = 'critical',
-}
-
-export enum AlarmState {
-  scheduled,
-  alerting,
-  countdown,
-  paused,
 }
 
 export interface AlarmConfiguration {

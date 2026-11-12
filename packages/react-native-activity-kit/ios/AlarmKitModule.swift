@@ -75,22 +75,11 @@ func createAlertPresentation(_ alertPresentation: AlertPresentation) -> AlarmPre
 
 func scheduleAlarm(alarmConfiguration: AlarmManager.AlarmConfiguration<GenericDictionaryAlarmStruct>) -> Promise<any HybridAlarmProxySpec> {
     return Promise.async {
-        try await withCheckedThrowingContinuation { continuation in
-            Task {
-                do {
-                    let id = UUID()
-                    let alarm = try await AlarmManager.shared.schedule(
-                        id: id,
-                        configuration: alarmConfiguration
-                    )
-                    let alarmModule = AlarmModule(alarm: alarm)
-
-                    continuation.resume(returning: alarmModule)
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        let alarm = try await AlarmManager.shared.schedule(
+            id: UUID(),
+            configuration: alarmConfiguration
+        )
+        return AlarmModule(alarm: alarm)
     }
 }
 
@@ -176,14 +165,10 @@ class AlarmKitModule: HybridAlarmKitModuleSpec {
     }
 
     func requestAuthorization() throws -> Promise<AuthStatus> {
+        // A thrown error used to leave the continuation unresumed, so the JS promise never settled.
         return Promise.async {
-            try await withCheckedThrowingContinuation { continuation in
-                Task {
-                    let result = try await AlarmManager.shared.requestAuthorization()
-
-                    continuation.resume(returning: convertAuthStatus(result))
-                }
-            }
+            let result = try await AlarmManager.shared.requestAuthorization()
+            return convertAuthStatus(result)
         }
     }
 
